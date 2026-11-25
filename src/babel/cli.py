@@ -1,7 +1,9 @@
 import argparse
 import json
+from pathlib import Path
 
-from babel.config import RunConfig
+from babel.config import RunConfig, TabularConfig
+from babel.tabular_experiment import prepare_tabular_experiment
 from babel.train import train
 
 
@@ -18,12 +20,35 @@ def main() -> None:
     train_parser.add_argument("--baseline-rate", type=float, default=0.05)
     train_parser.add_argument("--log-every", type=int, default=500)
     train_parser.add_argument("--runs-dir", default="runs")
+    tabular_parser = subparsers.add_parser("prepare-tabular", help="prepare a reproducible Phase 3 tabular dataset")
+    tabular_parser.add_argument("--config", dest="config_path", help="JSON tabular configuration file")
+    tabular_parser.add_argument("--dataset", choices=("congressional_voting_records", "car_evaluation"))
+    tabular_parser.add_argument("--seed", type=int)
+    tabular_parser.add_argument("--data-dir")
+    tabular_parser.add_argument("--splits-dir")
+    tabular_parser.add_argument("--held-out", type=int, nargs=2, action="append", metavar=("VALUE_A", "VALUE_B"),
+                                help="integer-coded pair to reserve for zero-shot evaluation; repeat as needed")
+    tabular_parser.add_argument("--held-out-columns", type=int, nargs=2, metavar=("COLUMN_A", "COLUMN_B"))
     args = parser.parse_args()
-    config = RunConfig(seed=args.seed, episodes=args.episodes, vocab_size=args.vocab_size,
-                       message_length=args.message_length, learning_rate=args.learning_rate,
-                       entropy_bonus=args.entropy_bonus, baseline_rate=args.baseline_rate,
-                       log_every=args.log_every, runs_dir=args.runs_dir)
-    result = train(config)
+    if args.command == "prepare-tabular":
+        values = json.loads(Path(args.config_path).read_text(encoding="utf-8")) if args.config_path else {}
+        config = TabularConfig.from_dict(values)
+        overrides = {
+            "dataset": args.dataset,
+            "seed": args.seed,
+            "data_dir": args.data_dir,
+            "splits_dir": args.splits_dir,
+            "held_out_combinations": tuple(tuple(pair) for pair in args.held_out) if args.held_out else None,
+            "held_out_columns": tuple(args.held_out_columns) if args.held_out_columns else None,
+        }
+        config = TabularConfig.from_dict({**config.to_dict(), **{key: value for key, value in overrides.items() if value is not None}})
+        result = prepare_tabular_experiment(config)
+    else:
+        config = RunConfig(seed=args.seed, episodes=args.episodes, vocab_size=args.vocab_size,
+                           message_length=args.message_length, learning_rate=args.learning_rate,
+                           entropy_bonus=args.entropy_bonus, baseline_rate=args.baseline_rate,
+                           log_every=args.log_every, runs_dir=args.runs_dir)
+        result = train(config)
     print(json.dumps(result, indent=2))
 
 

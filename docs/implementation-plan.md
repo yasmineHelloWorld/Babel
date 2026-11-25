@@ -151,33 +151,56 @@ Metrics have tests against known and random oracle examples, and the project has
 
 ### Goal
 
-Apply the same communication game to simple real datasets.
+Apply the same communication game to a real-world categorical dataset and a controlled combinatorial benchmark.
 
 ### Datasets
 
 | Dataset | Purpose |
 |---|---|
-| Wine | First tabular benchmark for rate-accuracy curves |
-| Car Evaluation | Grammar and generalization test using held-out attribute combinations |
+| Congressional Voting Records | Real-world rate-accuracy benchmark: communicate categorical vote profiles to predict party affiliation, with an optional held-out vote-combination generalization test |
+| Car Evaluation | Controlled grammar and generalization test using held-out attribute combinations; this dataset is generated from a decision model rather than collected from real car purchases |
+
+Congressional Voting Records is a good fit because it contains 435 real U.S. House member records, 16 categorical votes, and a categorical Democrat/Republican label. The small, interpretable feature vocabulary supports compact messages, while vote profiles can be partitioned to test whether the learned code handles unseen combinations. UCI marks undisclosed or absent votes as unknown; preserve that state as an explicit category rather than treating it as a yea or nay. [UCI dataset 105](https://archive.ics.uci.edu/dataset/105/congressional%2Bvoting%2Brecords).
 
 ### New files
 
 ```text
+docs/data-cards/
+├── congressional_voting_records.md
+└── car_evaluation.md
+
+configs/
+├── congressional-voting-records.json
+└── car-evaluation.json
+
 src/babel/
 ├── datasets/tabular.py
 ├── preprocessing.py
 ├── split_guard.py
+├── tabular_experiment.py
 └── data_cards.py
 ```
 
 ### Deliverables
 
 - [ ] Load data reproducibly.
-- [ ] Add a data card for each dataset: source, columns, labels, usage, and limitations.
+- [ ] Load Congressional Voting Records from UCI and Car Evaluation from the UCI archive; cache source files and record source/version details for reproducibility.
+- [ ] Add `babel prepare-tabular` as the reproducible dataset preparation command, with JSON configs for each dataset and saved source, split, and preprocessing summaries.
+- [ ] Add a data card for each dataset: source, columns, labels, usage, missing-value handling, and limitations. The Congressional Voting Records card must identify this as historical 1984 U.S. House voting data; the Car Evaluation card must identify it as decision-model-generated data.
 - [ ] Add `SplitGuard` to save split indexes and their SHA-256 hash.
-- [ ] Create stratified train, validation, and test splits.
-- [ ] Fit `StandardScaler` using training data only.
+- [ ] Create stratified train, validation, and test splits for ordinary evaluation. Save the chosen held-out vote-value combinations separately for the optional Congressional Voting Records generalization test and for the Car Evaluation test.
+- [ ] Treat features as categorical: fit category vocabularies using training data only, preserve `?` as an explicit unknown-vote value, and use one-hot encoding for methods that require numeric vectors. Do not assign ordinal meaning to category IDs. Fit any numeric scaling only on training data; neither Phase 3 dataset requires scaling in its raw form.
 - [ ] Select hyperparameters using validation data only.
+
+### Dataset-specific experiments
+
+- **Congressional Voting Records:** The Speaker observes the 16 categorical votes and the Listener receives only a message and predicts party affiliation. Report the ordinary stratified test result and a separate optional test in which selected combinations of two vote attributes are absent from training. Choose held-out combinations using training data only and report their sample counts and class coverage.
+- **Car Evaluation:** The Speaker observes the six categorical attributes and the Listener receives only a message. Predict selected attributes such as `buying` and `safety`; hide specific attribute combinations during training and report the held-out combinations separately. Treat this as a controlled, model-generated grammar test rather than evidence about real-world car buying.
+
+### Data cards
+
+- `docs/data-cards/congressional_voting_records.md`: UCI source and license, 435 records, 16 named vote columns, party labels, the `?` unknown value, intended experiments, and historical/sampling limitations.
+- `docs/data-cards/car_evaluation.md`: UCI source, six categorical attributes, four acceptability labels, intended held-out-combination test, and the limitation that examples come from a hierarchical decision model.
 
 ### Car Evaluation generalization test
 
@@ -279,11 +302,11 @@ Run experiments consistently and generate reproducible report results.
 - [ ] Add YAML manifests for every experiment.
 - [ ] Use five seeds as the standard setting.
 - [ ] Report means and confidence intervals.
-- [ ] Generate rate-accuracy curves.
+- [ ] Generate rate-accuracy curves for Congressional Voting Records and the controlled Car Evaluation experiment, labeling the two settings clearly.
 - [ ] Run grammar sweeps with small vocabularies, such as `K = 3` or `K = 4`.
-- [ ] Report held-out zero-shot results.
+- [ ] Report held-out zero-shot results separately for ordinary test rows, held-out Congressional vote combinations, and held-out Car Evaluation combinations; include held-out support and class coverage.
 - [ ] Generate confusion matrices and ROC AUC where appropriate.
-- [ ] Report collapse, memorization, or baseline parity honestly.
+- [ ] Report class balance, collapse, memorization, or baseline parity honestly, and distinguish results on historical vote records from the model-generated Car Evaluation benchmark.
 
 ### Exit criterion
 
@@ -329,6 +352,6 @@ These are implemented only after the core phases are complete:
 
 1. Run and inspect Phase 1 locally until each run saves metrics and checkpoints.
 2. Add missing metrics and tests in Phase 2.
-3. Implement Wine and Car Evaluation with `SplitGuard`.
+3. Implement Congressional Voting Records and Car Evaluation with `SplitGuard`, including explicit unknown-vote handling and saved held-out-combination definitions.
 4. Add the baselines before neural agents, so comparisons exist from the beginning.
 5. After tabular experiments are stable, add neural agents and Fashion-MNIST.

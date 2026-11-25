@@ -1,0 +1,6 @@
+{
+  "dataset": "congressional_voting_records",
+  "seed": 0,
+  "data_dir": "data",
+  "splits_dir": "data/splits"
+}

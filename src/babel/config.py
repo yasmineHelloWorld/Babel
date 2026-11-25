@@ -34,3 +34,38 @@ class RunConfig:
     @property
     def output_root(self) -> Path:
         return Path(self.runs_dir)
+
+
+@dataclass(frozen=True)
+class TabularConfig:
+    dataset: str = "congressional_voting_records"
+    seed: int = 0
+    data_dir: str = "data"
+    splits_dir: str = "data/splits"
+    held_out_combinations: tuple[tuple[int, int], ...] = ()
+    held_out_columns: tuple[int, int] = (0, 5)
+
+    def validate(self) -> None:
+        if self.dataset not in {"congressional_voting_records", "car_evaluation"}:
+            raise ValueError("dataset must be 'congressional_voting_records' or 'car_evaluation'")
+        if any(len(pair) != 2 for pair in self.held_out_combinations):
+            raise ValueError("each held-out combination must contain two integer-coded values")
+        if len(self.held_out_columns) != 2 or min(self.held_out_columns) < 0:
+            raise ValueError("held_out_columns must contain two nonnegative column indexes")
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, values: dict) -> "TabularConfig":
+        normalized = dict(values)
+        if "held_out_combinations" in normalized:
+            normalized["held_out_combinations"] = tuple(tuple(pair) for pair in normalized["held_out_combinations"])
+        if "held_out_columns" in normalized:
+            normalized["held_out_columns"] = tuple(normalized["held_out_columns"])
+        return cls(**normalized)
+
+    @property
+    def split_path(self) -> Path:
+        suffix = "-held-out" if self.held_out_combinations else ""
+        return Path(self.splits_dir) / f"{self.dataset}{suffix}.npz"
