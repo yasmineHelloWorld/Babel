@@ -232,10 +232,10 @@ Determine whether learned communication adds value beyond standard methods.
 
 ### Deliverables
 
-- [ ] Use the same data split for every baseline.
-- [ ] Match the communication budget: number of symbols, message length, or bits.
-- [ ] Fit all preprocessing on training data only.
-- [ ] Save predictions for every method for later confusion matrices and analysis.
+- [x] Use the same data split for every baseline.
+- [x] Match the communication budget: K-Means code count and tree leaf limit are bounded by `K ** L`.
+- [x] Fit all preprocessing on training data only.
+- [x] Save predictions for every method for later confusion matrices and analysis.
 
 ### Exit criterion
 

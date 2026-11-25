@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 from babel.config import RunConfig, TabularConfig
+from babel.baselines import run_tabular_baselines
 from babel.tabular_experiment import prepare_tabular_experiment
 from babel.train import train
 
@@ -29,6 +30,11 @@ def main() -> None:
     tabular_parser.add_argument("--held-out", type=int, nargs=2, action="append", metavar=("VALUE_A", "VALUE_B"),
                                 help="integer-coded pair to reserve for zero-shot evaluation; repeat as needed")
     tabular_parser.add_argument("--held-out-columns", type=int, nargs=2, metavar=("COLUMN_A", "COLUMN_B"))
+    baseline_parser = subparsers.add_parser("compare-tabular", help="run Phase 4 classical baselines on a prepared split")
+    baseline_parser.add_argument("--config", dest="config_path", required=True, help="JSON tabular configuration file")
+    baseline_parser.add_argument("--symbols", type=int, default=3, help="symbols available per message position")
+    baseline_parser.add_argument("--message-length", type=int, default=2)
+    baseline_parser.add_argument("--output", help="NPZ output path (default: runs/<dataset>-baselines.npz)")
     args = parser.parse_args()
     if args.command == "prepare-tabular":
         values = json.loads(Path(args.config_path).read_text(encoding="utf-8")) if args.config_path else {}
@@ -43,6 +49,14 @@ def main() -> None:
         }
         config = TabularConfig.from_dict({**config.to_dict(), **{key: value for key, value in overrides.items() if value is not None}})
         result = prepare_tabular_experiment(config)
+    elif args.command == "compare-tabular":
+        values = json.loads(Path(args.config_path).read_text(encoding="utf-8"))
+        config = TabularConfig.from_dict(values)
+        output = args.output or f"runs/{config.dataset}-baselines.npz"
+        predictions = run_tabular_baselines(config, message_symbols=args.symbols,
+                                            message_length=args.message_length, output_path=output)
+        result = {"output_path": output, "budget": predictions.budget,
+                  "methods": list(predictions.predictions)}
     else:
         config = RunConfig(seed=args.seed, episodes=args.episodes, vocab_size=args.vocab_size,
                            message_length=args.message_length, learning_rate=args.learning_rate,

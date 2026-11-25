@@ -36,6 +36,17 @@ babel prepare-tabular --config configs/congressional-voting-records.json
 
 Use `--dataset car_evaluation` to prepare the controlled benchmark. Split indices are stored in an `.npz` file with their SHA-256 digest and settings in a neighboring `.json`; a summary of the prepared data is written beside them. Existing split files are reused. Categorical one-hot encoding is fit only on training rows, and previously unseen validation or test categories are safely ignored by the encoder. See the data cards in [`docs/data-cards/`](docs/data-cards/).
 
+## Classical baselines (Phase 4)
+
+After preparing a tabular dataset, run the comparisons with the same saved split and a two-position, three-symbol budget (18 possible messages):
+
+```powershell
+babel compare-tabular --config configs/congressional-voting-records.json
+babel compare-tabular --config configs/car-evaluation.json --symbols 3 --message-length 2
+```
+
+This saves `runs/<dataset>-baselines.npz` with train, validation, and test predictions, ground-truth labels, the budget, and the split hash. The full-data logistic-regression oracle sees one-hot features. K-Means is limited to the message capacity and its decoder predicts from cluster IDs only. The decision tree is limited to the same maximum number of leaves. All preprocessing is reused from the Phase 3 train-fitted encoder. Pass `--output` to choose another prediction artifact path.
+
 ## Reproducibility
 
 The run configuration and seed are saved with each run. Separate NumPy generators are derived for data, environment sampling, Speaker exploration, Listener initialization, and evaluation. The synthetic dataset contains all nine shape-color combinations, and evaluation enumerates those combinations deterministically.
