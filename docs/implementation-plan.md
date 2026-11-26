@@ -259,11 +259,11 @@ src/babel/agents/
 
 ### Deliverables
 
-- [ ] Implement MLP Speaker and Listener agents for tabular data.
-- [ ] Train the Listener with cross-entropy.
-- [ ] Train the Speaker with REINFORCE, an EMA baseline, and an entropy bonus.
-- [ ] Add an ablation where both agents use REINFORCE.
-- [ ] Log loss, reward, active vocabulary, and accuracy.
+- [x] Implement MLP Speaker and Listener agents for tabular data.
+- [x] Train the Listener with cross-entropy.
+- [x] Train the Speaker with REINFORCE, an EMA baseline, and an entropy bonus.
+- [x] Add an ablation where both agents use REINFORCE.
+- [x] Log loss, reward, active vocabulary, and accuracy.
 
 ### Exit criterion
 
@@ -279,10 +279,10 @@ Test the communication system using features derived from images.
 
 ### Deliverables
 
-- [ ] Load Fashion-MNIST.
-- [ ] Fit PCA using training images only.
-- [ ] Use PCA features as the MLP Speaker input.
-- [ ] Start with `L = 1` messages for rate-accuracy curves.
+- [x] Load Fashion-MNIST.
+- [x] Fit PCA using training images only.
+- [x] Use PCA features as the MLP Speaker input.
+- [x] Start with `L = 1` messages for rate-accuracy curves.
 - [ ] Keep a CNN Speaker as a stretch goal after the MLP version works.
 
 ### Exit criterion
@@ -299,14 +299,14 @@ Run experiments consistently and generate reproducible report results.
 
 ### Deliverables
 
-- [ ] Add YAML manifests for every experiment.
-- [ ] Use five seeds as the standard setting.
-- [ ] Report means and confidence intervals.
-- [ ] Generate rate-accuracy curves for Congressional Voting Records and the controlled Car Evaluation experiment, labeling the two settings clearly.
-- [ ] Run grammar sweeps with small vocabularies, such as `K = 3` or `K = 4`.
-- [ ] Report held-out zero-shot results separately for ordinary test rows, held-out Congressional vote combinations, and held-out Car Evaluation combinations; include held-out support and class coverage.
-- [ ] Generate confusion matrices and ROC AUC where appropriate.
-- [ ] Report class balance, collapse, memorization, or baseline parity honestly, and distinguish results on historical vote records from the model-generated Car Evaluation benchmark.
+- [x] Add YAML manifests for every experiment.
+- [x] Use five seeds as the standard setting.
+- [x] Report means and confidence intervals.
+- [x] Generate rate-accuracy curves for Congressional Voting Records and the controlled Car Evaluation experiment, labeling the two settings clearly.
+- [x] Run grammar sweeps with small vocabularies, such as `K = 3` or `K = 4`.
+- [x] Report held-out zero-shot results separately for ordinary test rows, held-out Congressional vote combinations, and held-out Car Evaluation combinations; include held-out support and class coverage.
+- [x] Generate confusion matrices and ROC AUC where appropriate.
+- [x] Report class balance, collapse, memorization, or baseline parity honestly, and distinguish results on historical vote records from the model-generated Car Evaluation benchmark.
 
 ### Exit criterion
 
@@ -322,12 +322,12 @@ Create a user interface that replays saved runs without training during a demons
 
 ### Deliverables
 
-- [ ] `app.py` reads saved JSONL, NPZ, and checkpoint artifacts only.
-- [ ] Show the synthetic world and learned messages.
-- [ ] Display a dictionary of learned symbols.
-- [ ] Add plots for accuracy, entropy, and mutual information.
-- [ ] Add a small human arena for compact vocabularies.
-- [ ] Use HTML/SVG to display the communication game stage.
+- [x] `app.py` reads saved JSONL, NPZ, and checkpoint artifacts only.
+- [x] Show the synthetic world and learned messages.
+- [x] Display a dictionary of learned symbols.
+- [x] Add plots for accuracy, entropy, and mutual information.
+- [x] Add a small human arena for compact vocabularies.
+- [x] Use HTML/SVG to display the communication game stage.
 
 ### Exit criterion
 
