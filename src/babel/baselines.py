@@ -1,4 +1,4 @@
-"""Capacity-matched classical baselines for tabular communication tasks."""
+"""Capacity-matched classical baselines for tabular and vision communication tasks."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from pathlib import Path
 import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.linear_model import LogisticRegression
+from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
 
 from babel.config import TabularConfig
@@ -18,18 +19,25 @@ from babel.split_guard import SplitGuard
 
 @dataclass(frozen=True)
 class BaselinePredictions:
-    """Predictions on the same train/validation/test rows for each method."""
+    """Predictions and optional class probabilities on the same train/val/test rows."""
 
     predictions: dict[str, dict[str, np.ndarray]]
     budget: dict[str, int | str]
+    probabilities: dict[str, dict[str, np.ndarray]] | None = None
 
     def save(self, path: str | Path) -> Path:
-        """Save prediction vectors and budget metadata in a compressed NPZ."""
+        """Save prediction vectors, probabilities, and budget metadata in a compressed NPZ."""
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         arrays = {f"{method}__{split}": values
                   for method, splits in self.predictions.items()
                   for split, values in splits.items()}
+        if self.probabilities:
+            arrays.update({
+                f"{method}__proba__{split}": values
+                for method, splits in self.probabilities.items()
+                for split, values in splits.items()
+            })
         arrays.update({f"budget__{key}": np.asarray(value) for key, value in self.budget.items()})
         np.savez_compressed(path, **arrays)
         return path
@@ -71,6 +79,7 @@ def run_tabular_baselines(
             "test": prepared.test_labels,
         }},
         {**result.budget, "dataset": config.dataset, "split_sha256": split.sha256},
+        probabilities=result.probabilities,
     )
     if output_path is not None:
         result.save(output_path)
@@ -112,42 +121,65 @@ def fit_predict_baselines(
     if n_clusters < 1:
         raise ValueError("training split must not be empty")
 
-    # Oracle sees raw encoded features and establishes an upper reference.
+    split_names = ("train", "validation", "test")
+    classes = np.unique(labels[0])
+    n_classes = len(classes)
+    class_to_idx = {int(c): idx for idx, c in enumerate(classes)}
+
+    # Oracle 1: Logistic Regression on raw/PCA features.
     oracle = LogisticRegression(C=oracle_c, max_iter=2000, random_state=seed)
     oracle.fit(arrays[0], labels[0])
     output: dict[str, dict[str, np.ndarray]] = {
-        "full_data_oracle": {name: oracle.predict(x) for name, x in zip(("train", "validation", "test"), arrays)}
+        "full_data_oracle": {name: oracle.predict(x) for name, x in zip(split_names, arrays)}
+    }
+    probas: dict[str, dict[str, np.ndarray]] = {
+        "full_data_oracle": {name: oracle.predict_proba(x) for name, x in zip(split_names, arrays)}
     }
 
-    # Quantization creates discrete codes; the listener/decoder sees codes only.
+    # Oracle 2: Nonlinear MLP on raw/PCA features.
+    mlp_oracle = MLPClassifier(hidden_layer_sizes=(64, 64), max_iter=400, random_state=seed)
+    mlp_oracle.fit(arrays[0], labels[0])
+    output["full_data_oracle_mlp"] = {name: mlp_oracle.predict(x) for name, x in zip(split_names, arrays)}
+    probas["full_data_oracle_mlp"] = {name: mlp_oracle.predict_proba(x) for name, x in zip(split_names, arrays)}
+
+    # Quantization creates discrete codes; the listener/decoder sees cluster IDs ONLY.
     quantizer = KMeans(n_clusters=n_clusters, n_init=10, random_state=seed)
     train_codes = quantizer.fit_predict(arrays[0])
-    cluster_labels = np.unique(labels[0])
     code_to_label = np.empty(n_clusters, dtype=labels[0].dtype)
+    code_to_proba = np.zeros((n_clusters, n_classes), dtype=np.float64)
     for code in range(n_clusters):
         members = labels[0][train_codes == code]
         if len(members):
             values, counts = np.unique(members, return_counts=True)
             code_to_label[code] = values[np.argmax(counts)]
+            for val, cnt in zip(values, counts):
+                code_to_proba[code, class_to_idx[int(val)]] = cnt / len(members)
         else:
-            # K-Means should not produce empty clusters, but remain deterministic
-            # and well-defined if a backend does.
-            code_to_label[code] = cluster_labels[0]
-    output["kmeans_vq"] = {
-        name: code_to_label[quantizer.predict(x)]
-        for name, x in zip(("train", "validation", "test"), arrays)
-    }
+            code_to_label[code] = classes[0]
+            code_to_proba[code, :] = 1.0 / n_classes
+    split_codes = {name: quantizer.predict(x) for name, x in zip(split_names, arrays)}
+    output["kmeans_vq"] = {name: code_to_label[codes] for name, codes in split_codes.items()}
+    probas["kmeans_vq"] = {name: code_to_proba[codes] for name, codes in split_codes.items()}
 
     tree = DecisionTreeClassifier(max_leaf_nodes=capacity, random_state=seed)
     tree.fit(arrays[0], labels[0])
     output["size_limited_tree"] = {
-        name: tree.predict(x) for name, x in zip(("train", "validation", "test"), arrays)
+        name: tree.predict(x) for name, x in zip(split_names, arrays)
     }
-    return BaselinePredictions(output, {
-        "message_symbols": message_symbols,
-        "message_length": message_length,
-        "code_capacity": capacity,
-        "kmeans_clusters": n_clusters,
-        "tree_max_leaf_nodes": capacity,
-        "oracle": "LogisticRegression",
-    })
+    probas["size_limited_tree"] = {
+        name: tree.predict_proba(x) for name, x in zip(split_names, arrays)
+    }
+    return BaselinePredictions(
+        output,
+        {
+            "message_symbols": message_symbols,
+            "message_length": message_length,
+            "code_capacity": capacity,
+            "kmeans_clusters": n_clusters,
+            "kmeans_distinct_train_codes": int(len(np.unique(train_codes))),
+            "tree_max_leaf_nodes": capacity,
+            "tree_actual_leaves": int(tree.get_n_leaves()),
+            "oracle": "LogisticRegression+MLP",
+        },
+        probabilities=probas,
+    )

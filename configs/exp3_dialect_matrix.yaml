@@ -1,0 +1,20 @@
+name: exp3_dialect_matrix
+dataset: synthetic
+message_length: 2
+vocab_sizes: [3]
+seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+epochs: 120
+batch_size: 32
+hidden_dim: 64
+speaker_lr: 0.004
+listener_lr: 0.005
+entropy_bonus: 0.03
+baseline_ema: 0.05
+data_dir: data
+splits_dir: data/splits
+runs_dir: runs
+extra:
+  kind: dialect_matrix
+  datasets:
+    - synthetic
+    - congressional_voting_records

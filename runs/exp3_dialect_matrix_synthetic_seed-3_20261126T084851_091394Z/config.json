@@ -1,0 +1,18 @@
+{
+  "seed": 3,
+  "config": {
+    "run_name": "exp3_dialect_matrix_synthetic",
+    "vocab_size": 3,
+    "message_length": 2,
+    "hidden_dim": 64,
+    "embed_dim": 32,
+    "listener_mode": "holistic",
+    "training_mode": "hybrid_ce",
+    "epochs": 600,
+    "batch_size": 36,
+    "speaker_lr": 0.004,
+    "listener_lr": 0.005,
+    "entropy_bonus": 0.03
+  },
+  "created_utc": "2026-11-26T08:48:51.091394+00:00"
+}

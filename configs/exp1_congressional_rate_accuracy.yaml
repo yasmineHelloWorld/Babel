@@ -1,0 +1,19 @@
+name: exp1_congressional_rate_accuracy
+dataset: congressional_voting_records
+message_length: 1
+vocab_sizes: [2, 3, 4, 6, 8, 16]
+seeds: [0, 1, 2, 3, 4]
+epochs: 120
+batch_size: 32
+hidden_dim: 64
+speaker_lr: 0.004
+listener_lr: 0.005
+entropy_bonus: 0.02
+baseline_ema: 0.05
+listener_mode: holistic
+training_mode: hybrid_ce
+data_dir: data
+splits_dir: data/splits
+runs_dir: runs
+extra:
+  kind: rate_accuracy

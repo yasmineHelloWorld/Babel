@@ -1,0 +1,22 @@
+name: exp2_car_evaluation_grammar
+dataset: car_evaluation
+message_length: 2
+vocab_sizes: [3, 4, 6, 9]
+seeds: [0, 1, 2, 3, 4]
+epochs: 120
+batch_size: 64
+hidden_dim: 64
+speaker_lr: 0.004
+listener_lr: 0.005
+entropy_bonus: 0.03
+baseline_ema: 0.05
+target_columns: [0, 5]
+held_out_columns: [0, 5]
+held_out_combinations:
+  - [0, 2]
+  - [3, 0]
+data_dir: data
+splits_dir: data/splits
+runs_dir: runs
+extra:
+  kind: grammar

@@ -1,0 +1,13 @@
+{
+  "name": "car_evaluation",
+  "source": "UCI Machine Learning Repository (ID 19)",
+  "rows": 1728,
+  "features": 6,
+  "classes": [
+    "unacc",
+    "acc",
+    "good",
+    "vgood"
+  ],
+  "note": "Model-generated domain; used for controlled grammar and held-out attribute pairs"
+}

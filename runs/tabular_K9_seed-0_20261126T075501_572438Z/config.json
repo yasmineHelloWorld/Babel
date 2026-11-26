@@ -1,0 +1,9 @@
+{
+  "seed": 0,
+  "config": {
+    "vocab_size": 9,
+    "message_length": 2,
+    "agent": "tabular"
+  },
+  "created_utc": "2026-11-26T07:55:01.573826+00:00"
+}

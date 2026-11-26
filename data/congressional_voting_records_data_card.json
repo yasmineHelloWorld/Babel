@@ -1,0 +1,11 @@
+{
+  "name": "congressional_voting_records",
+  "source": "UCI Machine Learning Repository (ID 105)",
+  "rows": 435,
+  "features": 16,
+  "classes": [
+    "democrat",
+    "republican"
+  ],
+  "missing_policy": "Preserve '?' as explicit third category"
+}

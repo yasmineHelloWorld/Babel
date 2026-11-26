@@ -1,0 +1,21 @@
+name: exp1_fashion_mnist_rate_accuracy
+dataset: fashion_mnist
+message_length: 1
+vocab_sizes: [2, 3, 4, 6, 8, 16]
+seeds: [0, 1, 2, 3, 4]
+epochs: 80
+batch_size: 128
+hidden_dim: 64
+speaker_lr: 0.003
+listener_lr: 0.005
+entropy_bonus: 0.02
+baseline_ema: 0.05
+pca_components: 32
+listener_mode: holistic
+training_mode: hybrid_ce
+data_dir: data
+splits_dir: data/splits
+runs_dir: runs
+extra:
+  kind: rate_accuracy
+  max_samples: 10000

@@ -1,0 +1,56 @@
+{
+  "experiment": "exp_ablation_both_reinforce",
+  "kind": "ablation",
+  "dataset": "congressional_voting_records",
+  "vocab_size": 4,
+  "message_length": 1,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "results_by_training_mode": {
+    "hybrid_ce": {
+      "accuracy": {
+        "mean": 0.9784615384615385,
+        "std": 0.013760418323075636,
+        "ci95": 0.012061538461538467,
+        "n": 5
+      },
+      "f1_macro": {
+        "mean": 0.9772086683050679,
+        "std": 0.014537822081210839,
+        "ci95": 0.012742962900006882,
+        "n": 5
+      },
+      "active_vocabulary": {
+        "mean": 2.0,
+        "std": 0.0,
+        "ci95": 0.0,
+        "n": 5
+      }
+    },
+    "both_reinforce": {
+      "accuracy": {
+        "mean": 0.7661538461538462,
+        "std": 0.20652091316369026,
+        "ci95": 0.18102356183886226,
+        "n": 5
+      },
+      "f1_macro": {
+        "mean": 0.6252960443436634,
+        "std": 0.33463143739382745,
+        "ci95": 0.29331738743705676,
+        "n": 5
+      },
+      "active_vocabulary": {
+        "mean": 2.2,
+        "std": 0.8366600265340756,
+        "ci95": 0.7333648478076925,
+        "n": 5
+      }
+    }
+  }
+}

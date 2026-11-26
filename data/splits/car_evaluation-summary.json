@@ -1,0 +1,74 @@
+{
+  "config": {
+    "dataset": "car_evaluation",
+    "seed": 0,
+    "data_dir": "data",
+    "splits_dir": "data/splits",
+    "held_out_combinations": [],
+    "held_out_columns": [
+      0,
+      5
+    ]
+  },
+  "dataset": "car_evaluation",
+  "source_url": "https://archive.ics.uci.edu/static/public/19/car+evaluation.zip",
+  "n_samples": 1728,
+  "n_features": 6,
+  "feature_names": [
+    "buying",
+    "maintenance",
+    "doors",
+    "persons",
+    "lug_boot",
+    "safety"
+  ],
+  "label_names": [
+    "unacc",
+    "acc",
+    "good",
+    "vgood"
+  ],
+  "split_sha256": "0bd15483690752e7bff08bb04f4def499de57b37768fb7615570844184882354",
+  "split_type": "stratified",
+  "split_sizes": {
+    "train": 1209,
+    "validation": 261,
+    "test": 258
+  },
+  "encoded_feature_count": 21,
+  "training_categories": [
+    [
+      "0.0",
+      "1.0",
+      "2.0",
+      "3.0"
+    ],
+    [
+      "0.0",
+      "1.0",
+      "2.0",
+      "3.0"
+    ],
+    [
+      "0.0",
+      "1.0",
+      "2.0",
+      "3.0"
+    ],
+    [
+      "0.0",
+      "1.0",
+      "2.0"
+    ],
+    [
+      "0.0",
+      "1.0",
+      "2.0"
+    ],
+    [
+      "0.0",
+      "1.0",
+      "2.0"
+    ]
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "seed": 0,
+  "n_samples": 1728,
+  "features_sha256": "48430630981131413e76edd32e3b5df89a08416f6141f9384fc53ddc5684cda3",
+  "sha256": "c8697405b9405b75e94a8a2d19bfcc78c8d47797981e8c4cbccf43a492a2ce23",
+  "split_type": "held_out_combinations",
+  "held_out": [
+    [
+      0,
+      2
+    ],
+    [
+      3,
+      0
+    ]
+  ],
+  "columns": [
+    0,
+    5
+  ],
+  "validation_fraction": 0.15
+}

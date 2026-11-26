@@ -1,0 +1,18 @@
+{
+  "seed": 4,
+  "config": {
+    "run_name": "exp_ablation_both_reinforce_hybrid_ce",
+    "vocab_size": 4,
+    "message_length": 1,
+    "hidden_dim": 64,
+    "embed_dim": 32,
+    "listener_mode": "holistic",
+    "training_mode": "hybrid_ce",
+    "epochs": 120,
+    "batch_size": 32,
+    "speaker_lr": 0.004,
+    "listener_lr": 0.005,
+    "entropy_bonus": 0.02
+  },
+  "created_utc": "2026-11-26T08:49:47.752182+00:00"
+}

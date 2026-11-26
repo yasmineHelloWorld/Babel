@@ -1,0 +1,1218 @@
+{
+  "experiment": "exp1_congressional_rate_accuracy",
+  "kind": "rate_accuracy",
+  "dataset": "congressional_voting_records",
+  "label_names": [
+    "democrat",
+    "republican"
+  ],
+  "split_sha256": "b1f47013dd7f350f3026bd2ac0a7fc0a24f0511e3868a7ad80b99688de5e8b84",
+  "message_length": 1,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "class_balance": {
+    "democrat": 267,
+    "republican": 168
+  },
+  "validation_tuning": {
+    "selected": {
+      "entropy_bonus": 0.01,
+      "hidden_dim": 64
+    },
+    "candidates": [
+      {
+        "entropy_bonus": 0.01,
+        "hidden_dim": 64,
+        "tune_vocab_size": 3,
+        "val_accuracy": 0.9384615384615385
+      },
+      {
+        "entropy_bonus": 0.03,
+        "hidden_dim": 64,
+        "tune_vocab_size": 3,
+        "val_accuracy": 0.9384615384615385
+      },
+      {
+        "entropy_bonus": 0.02,
+        "hidden_dim": 32,
+        "tune_vocab_size": 3,
+        "val_accuracy": 0.9076923076923077
+      }
+    ]
+  },
+  "results_by_vocab": {
+    "2": {
+      "vocab_size": 2,
+      "bits_capacity": 1.0,
+      "neural": {
+        "accuracy": {
+          "mean": 0.9846153846153847,
+          "std": 0.010878565864408425,
+          "ci95": 0.00953548340604619,
+          "n": 5
+        },
+        "f1_macro": {
+          "mean": 0.9837714015751636,
+          "std": 0.011490933167396902,
+          "ci95": 0.010072247013384925,
+          "n": 5
+        },
+        "precision_macro": {
+          "mean": 0.9833686679174484,
+          "std": 0.011849155408918031,
+          "ci95": 0.010386242652357614,
+          "n": 5
+        },
+        "recall_macro": {
+          "mean": 0.9845,
+          "std": 0.011911129249571594,
+          "ci95": 0.010440565118804632,
+          "n": 5
+        },
+        "roc_auc_ovr": {
+          "mean": 0.9844999999999999,
+          "std": 0.01191112924957158,
+          "ci95": 0.010440565118804618,
+          "n": 5
+        },
+        "mutual_information_bits": {
+          "mean": 0.8633402778447999,
+          "std": 0.06977134828060616,
+          "ci95": 0.06115728323380139,
+          "n": 5
+        },
+        "message_entropy_bits": {
+          "mean": 0.962890804717788,
+          "std": 0.008653315783868824,
+          "ci95": 0.0075849657108130065,
+          "n": 5
+        },
+        "active_vocabulary": {
+          "mean": 2.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "n": 5
+        },
+        "topsim": {
+          "mean": 0.6039927354164145,
+          "std": 0.01793933870766894,
+          "ci95": 0.01572452368212246,
+          "n": 5
+        }
+      },
+      "baselines": {
+        "full_data_oracle": {
+          "accuracy": {
+            "mean": 0.9692307692307691,
+            "std": 1.2412670766236366e-16,
+            "ci95": 1.0880185641326533e-16,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9675,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.998,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          }
+        },
+        "full_data_oracle_mlp": {
+          "accuracy": {
+            "mean": 0.9784615384615385,
+            "std": 0.013760418323075636,
+            "ci95": 0.012061538461538467,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9771189247153244,
+            "std": 0.01461047888979028,
+            "ci95": 0.012806649400707514,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.9992000000000001,
+            "std": 0.0008366600265340762,
+            "ci95": 0.000733364847807693,
+            "n": 5
+          }
+        },
+        "kmeans_vq": {
+          "accuracy": {
+            "mean": 0.9230769230769231,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9212121212121211,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.9375,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          }
+        },
+        "size_limited_tree": {
+          "accuracy": {
+            "mean": 1.0,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 1.0,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 1.0,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          }
+        }
+      },
+      "confusion_matrix_sum": [
+        [
+          197,
+          3
+        ],
+        [
+          2,
+          123
+        ]
+      ],
+      "runs": [
+        {
+          "seed": 0,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K2_seed-0_20261126T075054_719813Z",
+          "accuracy": 0.9846153846153847,
+          "f1_macro": 0.9836230788611741,
+          "roc_auc_ovr": 0.98,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 1,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K2_seed-1_20261126T075101_642791Z",
+          "accuracy": 0.9846153846153847,
+          "f1_macro": 0.9838669645073219,
+          "roc_auc_ovr": 0.9874999999999999,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 2,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K2_seed-2_20261126T075108_694284Z",
+          "accuracy": 0.9846153846153847,
+          "f1_macro": 0.9838669645073219,
+          "roc_auc_ovr": 0.9874999999999999,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 3,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K2_seed-3_20261126T075115_540483Z",
+          "accuracy": 0.9692307692307692,
+          "f1_macro": 0.9675,
+          "roc_auc_ovr": 0.9675,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 4,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K2_seed-4_20261126T075122_701305Z",
+          "accuracy": 1.0,
+          "f1_macro": 1.0,
+          "roc_auc_ovr": 1.0,
+          "active_vocabulary": 2
+        }
+      ]
+    },
+    "3": {
+      "vocab_size": 3,
+      "bits_capacity": 1.584962500721156,
+      "neural": {
+        "accuracy": {
+          "mean": 0.9784615384615385,
+          "std": 0.013760418323075636,
+          "ci95": 0.012061538461538467,
+          "n": 5
+        },
+        "f1_macro": {
+          "mean": 0.9772086683050679,
+          "std": 0.01453782208121084,
+          "ci95": 0.012742962900006883,
+          "n": 5
+        },
+        "precision_macro": {
+          "mean": 0.9788916634404441,
+          "std": 0.015131070470779577,
+          "ci95": 0.013262968040841129,
+          "n": 5
+        },
+        "recall_macro": {
+          "mean": 0.9765,
+          "std": 0.015165750888103107,
+          "ci95": 0.01329336676692553,
+          "n": 5
+        },
+        "roc_auc_ovr": {
+          "mean": 0.9765,
+          "std": 0.015165750888103107,
+          "ci95": 0.01329336676692553,
+          "n": 5
+        },
+        "mutual_information_bits": {
+          "mean": 0.8336304011658511,
+          "std": 0.07931292546362866,
+          "ci95": 0.06952084438977069,
+          "n": 5
+        },
+        "message_entropy_bits": {
+          "mean": 0.9578501081002591,
+          "std": 0.015466277417116864,
+          "ci95": 0.013556789884108925,
+          "n": 5
+        },
+        "active_vocabulary": {
+          "mean": 2.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "n": 5
+        },
+        "topsim": {
+          "mean": 0.5951128487326535,
+          "std": 0.02467760557890824,
+          "ci95": 0.021630875009775813,
+          "n": 5
+        }
+      },
+      "baselines": {
+        "full_data_oracle": {
+          "accuracy": {
+            "mean": 0.9692307692307691,
+            "std": 1.2412670766236366e-16,
+            "ci95": 1.0880185641326533e-16,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9675,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.998,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          }
+        },
+        "full_data_oracle_mlp": {
+          "accuracy": {
+            "mean": 0.9784615384615385,
+            "std": 0.013760418323075636,
+            "ci95": 0.012061538461538467,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9771189247153244,
+            "std": 0.01461047888979028,
+            "ci95": 0.012806649400707514,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.9992000000000001,
+            "std": 0.0008366600265340762,
+            "ci95": 0.000733364847807693,
+            "n": 5
+          }
+        },
+        "kmeans_vq": {
+          "accuracy": {
+            "mean": 0.876923076923077,
+            "std": 1.2412670766236366e-16,
+            "ci95": 1.0880185641326533e-16,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.8717948717948719,
+            "std": 1.2412670766236366e-16,
+            "ci95": 1.0880185641326533e-16,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.9105000000000001,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          }
+        },
+        "size_limited_tree": {
+          "accuracy": {
+            "mean": 1.0,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 1.0,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 1.0,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          }
+        }
+      },
+      "confusion_matrix_sum": [
+        [
+          197,
+          3
+        ],
+        [
+          4,
+          121
+        ]
+      ],
+      "runs": [
+        {
+          "seed": 0,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K3_seed-0_20261126T075129_821373Z",
+          "accuracy": 0.9846153846153847,
+          "f1_macro": 0.9836230788611741,
+          "roc_auc_ovr": 0.98,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 1,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K3_seed-1_20261126T075136_762392Z",
+          "accuracy": 0.9692307692307692,
+          "f1_macro": 0.9675,
+          "roc_auc_ovr": 0.9675,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 2,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K3_seed-2_20261126T075143_514118Z",
+          "accuracy": 0.9692307692307692,
+          "f1_macro": 0.967948717948718,
+          "roc_auc_ovr": 0.975,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 3,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K3_seed-3_20261126T075150_396375Z",
+          "accuracy": 0.9692307692307692,
+          "f1_macro": 0.9669715447154472,
+          "roc_auc_ovr": 0.96,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 4,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K3_seed-4_20261126T075157_289770Z",
+          "accuracy": 1.0,
+          "f1_macro": 1.0,
+          "roc_auc_ovr": 1.0,
+          "active_vocabulary": 2
+        }
+      ]
+    },
+    "4": {
+      "vocab_size": 4,
+      "bits_capacity": 2.0,
+      "neural": {
+        "accuracy": {
+          "mean": 0.9846153846153847,
+          "std": 0.015384615384615385,
+          "ci95": 0.013485209956614118,
+          "n": 5
+        },
+        "f1_macro": {
+          "mean": 0.9838143593619785,
+          "std": 0.016138954526256317,
+          "ci95": 0.014146417367342918,
+          "n": 5
+        },
+        "precision_macro": {
+          "mean": 0.9836535682023488,
+          "std": 0.01761167190609424,
+          "ci95": 0.015437311067144403,
+          "n": 5
+        },
+        "recall_macro": {
+          "mean": 0.9845,
+          "std": 0.014832396974191324,
+          "ci95": 0.013001169178193165,
+          "n": 5
+        },
+        "roc_auc_ovr": {
+          "mean": 0.9845,
+          "std": 0.014832396974191324,
+          "ci95": 0.013001169178193165,
+          "n": 5
+        },
+        "mutual_information_bits": {
+          "mean": 0.8693233487388156,
+          "std": 0.09012349960535267,
+          "ci95": 0.07899673042319566,
+          "n": 5
+        },
+        "message_entropy_bits": {
+          "mean": 0.9626061948884332,
+          "std": 0.010479465884812115,
+          "ci95": 0.009185656849841309,
+          "n": 5
+        },
+        "active_vocabulary": {
+          "mean": 2.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "n": 5
+        },
+        "topsim": {
+          "mean": 0.6095686046637004,
+          "std": 0.04469025966371408,
+          "ci95": 0.03917273974775117,
+          "n": 5
+        }
+      },
+      "baselines": {
+        "full_data_oracle": {
+          "accuracy": {
+            "mean": 0.9692307692307691,
+            "std": 1.2412670766236366e-16,
+            "ci95": 1.0880185641326533e-16,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9675,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.998,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          }
+        },
+        "full_data_oracle_mlp": {
+          "accuracy": {
+            "mean": 0.9784615384615385,
+            "std": 0.013760418323075636,
+            "ci95": 0.012061538461538467,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9771189247153244,
+            "std": 0.01461047888979028,
+            "ci95": 0.012806649400707514,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.9992000000000001,
+            "std": 0.0008366600265340762,
+            "ci95": 0.000733364847807693,
+            "n": 5
+          }
+        },
+        "kmeans_vq": {
+          "accuracy": {
+            "mean": 0.8923076923076924,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.8853615520282186,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.9396000000000001,
+            "std": 0.010285912696499049,
+            "ci95": 0.009016000000000014,
+            "n": 5
+          }
+        },
+        "size_limited_tree": {
+          "accuracy": {
+            "mean": 1.0,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 1.0,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 1.0,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          }
+        }
+      },
+      "confusion_matrix_sum": [
+        [
+          197,
+          3
+        ],
+        [
+          2,
+          123
+        ]
+      ],
+      "runs": [
+        {
+          "seed": 0,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K4_seed-0_20261126T075204_326941Z",
+          "accuracy": 1.0,
+          "f1_macro": 1.0,
+          "roc_auc_ovr": 1.0,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 1,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K4_seed-1_20261126T075211_325722Z",
+          "accuracy": 0.9692307692307692,
+          "f1_macro": 0.9675,
+          "roc_auc_ovr": 0.9675,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 2,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K4_seed-2_20261126T075218_276621Z",
+          "accuracy": 1.0,
+          "f1_macro": 1.0,
+          "roc_auc_ovr": 1.0,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 3,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K4_seed-3_20261126T075225_550385Z",
+          "accuracy": 0.9692307692307692,
+          "f1_macro": 0.967948717948718,
+          "roc_auc_ovr": 0.975,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 4,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K4_seed-4_20261126T075232_500571Z",
+          "accuracy": 0.9846153846153847,
+          "f1_macro": 0.9836230788611741,
+          "roc_auc_ovr": 0.98,
+          "active_vocabulary": 2
+        }
+      ]
+    },
+    "6": {
+      "vocab_size": 6,
+      "bits_capacity": 2.584962500721156,
+      "neural": {
+        "accuracy": {
+          "mean": 0.9846153846153847,
+          "std": 0.015384615384615385,
+          "ci95": 0.013485209956614118,
+          "n": 5
+        },
+        "f1_macro": {
+          "mean": 0.9837246157722349,
+          "std": 0.01625009913185442,
+          "ci95": 0.014243839909575225,
+          "n": 5
+        },
+        "precision_macro": {
+          "mean": 0.9845609756097563,
+          "std": 0.01635086869857672,
+          "ci95": 0.014332168329266896,
+          "n": 5
+        },
+        "recall_macro": {
+          "mean": 0.9830000000000002,
+          "std": 0.01633630925270453,
+          "ci95": 0.0143194064122784,
+          "n": 5
+        },
+        "roc_auc_ovr": {
+          "mean": 0.9830000000000002,
+          "std": 0.01633630925270453,
+          "ci95": 0.0143194064122784,
+          "n": 5
+        },
+        "mutual_information_bits": {
+          "mean": 0.8615750897453335,
+          "std": 0.0985251347297045,
+          "ci95": 0.0863610883091943,
+          "n": 5
+        },
+        "message_entropy_bits": {
+          "mean": 0.959005208825071,
+          "std": 0.0049895529122057315,
+          "ci95": 0.00437353595969743,
+          "n": 5
+        },
+        "active_vocabulary": {
+          "mean": 2.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "n": 5
+        },
+        "topsim": {
+          "mean": 0.611143387022926,
+          "std": 0.016647503659795167,
+          "ci95": 0.014592180336879583,
+          "n": 5
+        }
+      },
+      "baselines": {
+        "full_data_oracle": {
+          "accuracy": {
+            "mean": 0.9692307692307691,
+            "std": 1.2412670766236366e-16,
+            "ci95": 1.0880185641326533e-16,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9675,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.998,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          }
+        },
+        "full_data_oracle_mlp": {
+          "accuracy": {
+            "mean": 0.9784615384615385,
+            "std": 0.013760418323075636,
+            "ci95": 0.012061538461538467,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9771189247153244,
+            "std": 0.01461047888979028,
+            "ci95": 0.012806649400707514,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.9992000000000001,
+            "std": 0.0008366600265340762,
+            "ci95": 0.000733364847807693,
+            "n": 5
+          }
+        },
+        "kmeans_vq": {
+          "accuracy": {
+            "mean": 0.9230769230769231,
+            "std": 0.010878565864408425,
+            "ci95": 0.00953548340604619,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9191688742657419,
+            "std": 0.012394981339173616,
+            "ci95": 0.010864680174859564,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.9426,
+            "std": 0.016946238520686545,
+            "ci95": 0.014854032987710791,
+            "n": 5
+          }
+        },
+        "size_limited_tree": {
+          "accuracy": {
+            "mean": 0.9692307692307691,
+            "std": 1.2412670766236366e-16,
+            "ci95": 1.0880185641326533e-16,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9669715447154472,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 1.0,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          }
+        }
+      },
+      "confusion_matrix_sum": [
+        [
+          198,
+          2
+        ],
+        [
+          3,
+          122
+        ]
+      ],
+      "runs": [
+        {
+          "seed": 0,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K6_seed-0_20261126T075239_384862Z",
+          "accuracy": 0.9692307692307692,
+          "f1_macro": 0.9675,
+          "roc_auc_ovr": 0.9675,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 1,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K6_seed-1_20261126T075247_676968Z",
+          "accuracy": 1.0,
+          "f1_macro": 1.0,
+          "roc_auc_ovr": 1.0,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 2,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K6_seed-2_20261126T075255_381205Z",
+          "accuracy": 1.0,
+          "f1_macro": 1.0,
+          "roc_auc_ovr": 1.0,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 3,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K6_seed-3_20261126T075303_618682Z",
+          "accuracy": 0.9692307692307692,
+          "f1_macro": 0.9675,
+          "roc_auc_ovr": 0.9675,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 4,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K6_seed-4_20261126T075313_054707Z",
+          "accuracy": 0.9846153846153847,
+          "f1_macro": 0.9836230788611741,
+          "roc_auc_ovr": 0.98,
+          "active_vocabulary": 2
+        }
+      ]
+    },
+    "8": {
+      "vocab_size": 8,
+      "bits_capacity": 3.0,
+      "neural": {
+        "accuracy": {
+          "mean": 0.9876923076923078,
+          "std": 0.012871692715908848,
+          "ci95": 0.01128253612011834,
+          "n": 5
+        },
+        "f1_macro": {
+          "mean": 0.9869980086736992,
+          "std": 0.013596594131889489,
+          "ci95": 0.011917940226620818,
+          "n": 5
+        },
+        "precision_macro": {
+          "mean": 0.9872148217636022,
+          "std": 0.01376126422181045,
+          "ci95": 0.012062279924471132,
+          "n": 5
+        },
+        "recall_macro": {
+          "mean": 0.9869999999999999,
+          "std": 0.013851895177195062,
+          "ci95": 0.012141721459496583,
+          "n": 5
+        },
+        "roc_auc_ovr": {
+          "mean": 0.9869999999999999,
+          "std": 0.01385189517719506,
+          "ci95": 0.01214172145949658,
+          "n": 5
+        },
+        "mutual_information_bits": {
+          "mean": 0.8821557483903394,
+          "std": 0.08256991091944771,
+          "ci95": 0.072375718015099,
+          "n": 5
+        },
+        "message_entropy_bits": {
+          "mean": 0.9609480067714296,
+          "std": 0.0073895761708636385,
+          "ci95": 0.006477249100041769,
+          "n": 5
+        },
+        "active_vocabulary": {
+          "mean": 2.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "n": 5
+        },
+        "topsim": {
+          "mean": 0.6123803029866628,
+          "std": 0.01845270626099567,
+          "ci95": 0.016174510182821535,
+          "n": 5
+        }
+      },
+      "baselines": {
+        "full_data_oracle": {
+          "accuracy": {
+            "mean": 0.9692307692307691,
+            "std": 1.2412670766236366e-16,
+            "ci95": 1.0880185641326533e-16,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9675,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.998,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          }
+        },
+        "full_data_oracle_mlp": {
+          "accuracy": {
+            "mean": 0.9784615384615385,
+            "std": 0.013760418323075636,
+            "ci95": 0.012061538461538467,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9771189247153244,
+            "std": 0.01461047888979028,
+            "ci95": 0.012806649400707514,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.9992000000000001,
+            "std": 0.0008366600265340762,
+            "ci95": 0.000733364847807693,
+            "n": 5
+          }
+        },
+        "kmeans_vq": {
+          "accuracy": {
+            "mean": 0.9292307692307693,
+            "std": 0.013760418323075624,
+            "ci95": 0.012061538461538455,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9261746568150142,
+            "std": 0.014395682313137984,
+            "ci95": 0.012618371899989834,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.9456,
+            "std": 0.011712173154457755,
+            "ci95": 0.010266172412345348,
+            "n": 5
+          }
+        },
+        "size_limited_tree": {
+          "accuracy": {
+            "mean": 0.9938461538461538,
+            "std": 0.008426500884694833,
+            "ci95": 0.007386153685930787,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9934492315444696,
+            "std": 0.00897000913021816,
+            "ci95": 0.007862559668192935,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.9841999999999999,
+            "std": 0.02163504102145411,
+            "ci95": 0.018963949588627405,
+            "n": 5
+          }
+        }
+      },
+      "confusion_matrix_sum": [
+        [
+          198,
+          2
+        ],
+        [
+          2,
+          123
+        ]
+      ],
+      "runs": [
+        {
+          "seed": 0,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K8_seed-0_20261126T075320_641984Z",
+          "accuracy": 1.0,
+          "f1_macro": 1.0,
+          "roc_auc_ovr": 1.0,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 1,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K8_seed-1_20261126T075328_405761Z",
+          "accuracy": 1.0,
+          "f1_macro": 1.0,
+          "roc_auc_ovr": 1.0,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 2,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K8_seed-2_20261126T075336_081410Z",
+          "accuracy": 0.9846153846153847,
+          "f1_macro": 0.9836230788611741,
+          "roc_auc_ovr": 0.98,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 3,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K8_seed-3_20261126T075343_783011Z",
+          "accuracy": 0.9692307692307692,
+          "f1_macro": 0.9675,
+          "roc_auc_ovr": 0.9675,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 4,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K8_seed-4_20261126T075351_175811Z",
+          "accuracy": 0.9846153846153847,
+          "f1_macro": 0.9838669645073219,
+          "roc_auc_ovr": 0.9874999999999999,
+          "active_vocabulary": 2
+        }
+      ]
+    },
+    "16": {
+      "vocab_size": 16,
+      "bits_capacity": 4.0,
+      "neural": {
+        "accuracy": {
+          "mean": 0.9723076923076924,
+          "std": 0.012871692715908862,
+          "ci95": 0.011282536120118352,
+          "n": 5
+        },
+        "f1_macro": {
+          "mean": 0.9707615995801472,
+          "std": 0.013706063253664823,
+          "ci95": 0.012013894142529742,
+          "n": 5
+        },
+        "precision_macro": {
+          "mean": 0.9707626989090403,
+          "std": 0.013394109336549694,
+          "ci95": 0.011740454478039172,
+          "n": 5
+        },
+        "recall_macro": {
+          "mean": 0.9715,
+          "std": 0.015268431484602473,
+          "ci95": 0.013383370278072711,
+          "n": 5
+        },
+        "roc_auc_ovr": {
+          "mean": 0.9715,
+          "std": 0.015268431484602487,
+          "ci95": 0.013383370278072723,
+          "n": 5
+        },
+        "mutual_information_bits": {
+          "mean": 0.7965813530187832,
+          "std": 0.07198047567719744,
+          "ci95": 0.0630936687734576,
+          "n": 5
+        },
+        "message_entropy_bits": {
+          "mean": 0.9623175969369869,
+          "std": 0.012861306057558412,
+          "ci95": 0.01127343181265913,
+          "n": 5
+        },
+        "active_vocabulary": {
+          "mean": 2.0,
+          "std": 0.0,
+          "ci95": 0.0,
+          "n": 5
+        },
+        "topsim": {
+          "mean": 0.6203198240177452,
+          "std": 0.040091114702995596,
+          "ci95": 0.035141411445698656,
+          "n": 5
+        }
+      },
+      "baselines": {
+        "full_data_oracle": {
+          "accuracy": {
+            "mean": 0.9692307692307691,
+            "std": 1.2412670766236366e-16,
+            "ci95": 1.0880185641326533e-16,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9675,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.998,
+            "std": 0.0,
+            "ci95": 0.0,
+            "n": 5
+          }
+        },
+        "full_data_oracle_mlp": {
+          "accuracy": {
+            "mean": 0.9784615384615385,
+            "std": 0.013760418323075636,
+            "ci95": 0.012061538461538467,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9771189247153244,
+            "std": 0.01461047888979028,
+            "ci95": 0.012806649400707514,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.9992000000000001,
+            "std": 0.0008366600265340762,
+            "ci95": 0.000733364847807693,
+            "n": 5
+          }
+        },
+        "kmeans_vq": {
+          "accuracy": {
+            "mean": 0.9076923076923077,
+            "std": 0.01884222879063981,
+            "ci95": 0.01651594173400191,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9040581640450318,
+            "std": 0.0196537114792874,
+            "ci95": 0.017227237672118992,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.9452,
+            "std": 0.01802983638306242,
+            "ci95": 0.01580384839208479,
+            "n": 5
+          }
+        },
+        "size_limited_tree": {
+          "accuracy": {
+            "mean": 0.9569230769230769,
+            "std": 0.00688020916153779,
+            "ci95": 0.006030769230769209,
+            "n": 5
+          },
+          "f1_macro": {
+            "mean": 0.9534045627241712,
+            "std": 0.007584173495502146,
+            "ci95": 0.006647821175725237,
+            "n": 5
+          },
+          "roc_auc_ovr": {
+            "mean": 0.9208999999999999,
+            "std": 0.02273323558141251,
+            "ci95": 0.019926559562553688,
+            "n": 5
+          }
+        }
+      },
+      "confusion_matrix_sum": [
+        [
+          195,
+          5
+        ],
+        [
+          4,
+          121
+        ]
+      ],
+      "runs": [
+        {
+          "seed": 0,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K16_seed-0_20261126T075358_428153Z",
+          "accuracy": 0.9538461538461539,
+          "f1_macro": 0.9508692365835223,
+          "roc_auc_ovr": 0.9474999999999999,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 1,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K16_seed-1_20261126T075406_057027Z",
+          "accuracy": 0.9692307692307692,
+          "f1_macro": 0.9675,
+          "roc_auc_ovr": 0.9675,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 2,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K16_seed-2_20261126T075413_377637Z",
+          "accuracy": 0.9846153846153847,
+          "f1_macro": 0.9836230788611741,
+          "roc_auc_ovr": 0.98,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 3,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K16_seed-3_20261126T075420_772822Z",
+          "accuracy": 0.9692307692307692,
+          "f1_macro": 0.967948717948718,
+          "roc_auc_ovr": 0.975,
+          "active_vocabulary": 2
+        },
+        {
+          "seed": 4,
+          "run_dir": "runs\\exp1_congressional_rate_accuracy_K16_seed-4_20261126T075428_232320Z",
+          "accuracy": 0.9846153846153847,
+          "f1_macro": 0.9838669645073219,
+          "roc_auc_ovr": 0.9874999999999999,
+          "active_vocabulary": 2
+        }
+      ]
+    }
+  },
+  "test_class_coverage": {
+    "democrat": 40,
+    "republican": 25
+  }
+}

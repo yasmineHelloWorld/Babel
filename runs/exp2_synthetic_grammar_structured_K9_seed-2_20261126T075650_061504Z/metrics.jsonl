@@ -1,0 +1,5 @@
+{"active_vocabulary": 7, "baseline": 0.8085624587094967, "epoch": 120, "listener_loss": 0.14549407362937927, "reward": 0.8867992162704468, "speaker_loss": -0.00044613739009946585, "train_accuracy": 0.875, "val_accuracy": 0.875}
+{"active_vocabulary": 7, "baseline": 0.9266433817918056, "epoch": 240, "listener_loss": 0.09183806926012039, "reward": 0.932603120803833, "speaker_loss": -6.004141323501244e-05, "train_accuracy": 0.875, "val_accuracy": 0.875}
+{"active_vocabulary": 7, "baseline": 0.9336089807061971, "epoch": 360, "listener_loss": 0.0890503078699112, "reward": 0.935202956199646, "speaker_loss": 0.0031215865164995193, "train_accuracy": 0.875, "val_accuracy": 0.875}
+{"active_vocabulary": 7, "baseline": 0.9360221699856628, "epoch": 480, "listener_loss": 0.08801482617855072, "reward": 0.9361904859542847, "speaker_loss": 0.0038168057799339294, "train_accuracy": 0.875, "val_accuracy": 0.875}
+{"active_vocabulary": 7, "baseline": 0.9365188833350876, "epoch": 600, "listener_loss": 0.08758823573589325, "reward": 0.9366149306297302, "speaker_loss": 0.00010812543769134209, "train_accuracy": 0.875, "val_accuracy": 0.875}

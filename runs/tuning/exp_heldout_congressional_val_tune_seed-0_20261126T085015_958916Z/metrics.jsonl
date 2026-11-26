@@ -1,0 +1,2 @@
+{"active_vocabulary": 2, "baseline": 0.495406675945786, "epoch": 30, "listener_loss": 0.6678608059883118, "reward": 0.5212469398975372, "speaker_loss": 0.007772727636620402, "train_accuracy": 0.603448275862069, "val_accuracy": 0.5833333333333334}
+{"active_vocabulary": 3, "baseline": 0.6632158412231111, "epoch": 60, "listener_loss": 0.10968340560793877, "reward": 0.9077524840831757, "speaker_loss": 0.050915599800646305, "train_accuracy": 0.9827586206896551, "val_accuracy": 0.8333333333333334}

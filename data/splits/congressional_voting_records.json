@@ -1,0 +1,11 @@
+{
+  "seed": 0,
+  "fractions": [
+    0.7,
+    0.15,
+    0.15
+  ],
+  "n_samples": 435,
+  "labels_sha256": "1af8d74da2a379e6a52025646c283f29147bd199503c1ab04693612db626f8ac",
+  "sha256": "b1f47013dd7f350f3026bd2ac0a7fc0a24f0511e3868a7ad80b99688de5e8b84"
+}

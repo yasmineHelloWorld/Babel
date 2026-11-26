@@ -1,0 +1,21 @@
+{
+  "seed": 3,
+  "config": {
+    "run_name": "exp_heldout_congressional_K4",
+    "vocab_size": 4,
+    "message_length": 1,
+    "hidden_dim": 32,
+    "embed_dim": 32,
+    "listener_mode": "holistic",
+    "training_mode": "hybrid_ce",
+    "epochs": 120,
+    "batch_size": 32,
+    "speaker_lr": 0.004,
+    "listener_lr": 0.005,
+    "entropy_bonus": 0.02,
+    "experiment": "exp_heldout_congressional",
+    "dataset": "congressional_voting_records",
+    "split_sha256": "663f02e8376f8b070d9bcb69821c9e54a27739ee53de935dc1b132d06b9c888d"
+  },
+  "created_utc": "2026-11-26T08:59:03.716536+00:00"
+}

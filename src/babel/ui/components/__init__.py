@@ -1,0 +1,1 @@
+"""UI visual components."""

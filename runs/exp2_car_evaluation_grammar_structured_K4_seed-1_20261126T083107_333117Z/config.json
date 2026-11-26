@@ -1,0 +1,20 @@
+{
+  "seed": 1,
+  "config": {
+    "run_name": "exp2_car_evaluation_grammar_structured_K4",
+    "vocab_size": 4,
+    "message_length": 2,
+    "hidden_dim": 64,
+    "embed_dim": 32,
+    "listener_mode": "structured",
+    "training_mode": "hybrid_ce",
+    "epochs": 120,
+    "batch_size": 64,
+    "speaker_lr": 0.004,
+    "listener_lr": 0.005,
+    "entropy_bonus": 0.03,
+    "experiment": "exp2_car_evaluation_grammar",
+    "dataset": "car_evaluation"
+  },
+  "created_utc": "2026-11-26T08:31:07.333117+00:00"
+}

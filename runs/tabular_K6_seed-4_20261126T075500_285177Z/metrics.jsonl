@@ -1,0 +1,5 @@
+{"episode": 3000, "exact_accuracy": 0.125, "reward": 0.4032258023894085}
+{"episode": 6000, "exact_accuracy": 0.5, "reward": 0.36392405046823695}
+{"episode": 9000, "exact_accuracy": 0.5, "reward": 0.27254098488252587}
+{"episode": 12000, "exact_accuracy": 0.625, "reward": 0.5286396169775126}
+{"episode": 15000, "exact_accuracy": 0.5, "reward": 0.6282467529418861}

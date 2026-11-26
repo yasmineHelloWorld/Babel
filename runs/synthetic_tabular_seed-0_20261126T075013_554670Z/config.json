@@ -1,0 +1,15 @@
+{
+  "seed": 0,
+  "config": {
+    "seed": 0,
+    "episodes": 30000,
+    "vocab_size": 3,
+    "message_length": 2,
+    "learning_rate": 0.08,
+    "entropy_bonus": 0.01,
+    "baseline_rate": 0.05,
+    "log_every": 500,
+    "runs_dir": "runs"
+  },
+  "created_utc": "2026-11-26T07:50:13.554670+00:00"
+}

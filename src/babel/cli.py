@@ -2,8 +2,10 @@ import argparse
 import json
 from pathlib import Path
 
-from babel.config import RunConfig, TabularConfig
 from babel.baselines import run_tabular_baselines
+from babel.config import RunConfig, TabularConfig
+from babel.experiments import run_manifest
+from babel.reporting import generate_results_markdown
 from babel.tabular_experiment import prepare_tabular_experiment
 from babel.train import train
 
@@ -35,6 +37,19 @@ def main() -> None:
     baseline_parser.add_argument("--symbols", type=int, default=3, help="symbols available per message position")
     baseline_parser.add_argument("--message-length", type=int, default=2)
     baseline_parser.add_argument("--output", help="NPZ output path (default: runs/<dataset>-baselines.npz)")
+
+    exp_parser = subparsers.add_parser("run-experiment", help="run a Phase 7 YAML experiment manifest")
+    exp_parser.add_argument("--config", dest="config_path", required=True, help="YAML experiment manifest")
+
+    rep_parser = subparsers.add_parser("reproduce", help="run all YAML experiment manifests and generate docs/results.md")
+    rep_parser.add_argument("--configs-dir", default="configs")
+    rep_parser.add_argument("--runs-dir", default="runs")
+    rep_parser.add_argument("--output", default="docs/results.md")
+
+    report_parser = subparsers.add_parser("generate-report", help="compile docs/results.md from saved runs/summaries")
+    report_parser.add_argument("--runs-dir", default="runs")
+    report_parser.add_argument("--output", default="docs/results.md")
+
     args = parser.parse_args()
     if args.command == "prepare-tabular":
         values = json.loads(Path(args.config_path).read_text(encoding="utf-8")) if args.config_path else {}
@@ -57,6 +72,20 @@ def main() -> None:
                                             message_length=args.message_length, output_path=output)
         result = {"output_path": output, "budget": predictions.budget,
                   "methods": list(predictions.predictions)}
+    elif args.command == "run-experiment":
+        result = run_manifest(args.config_path)
+    elif args.command == "reproduce":
+        train(RunConfig(seed=0, runs_dir=args.runs_dir))
+        manifest_paths = sorted(Path(args.configs_dir).glob("*.yaml"))
+        outputs = []
+        for path in manifest_paths:
+            res = run_manifest(path)
+            outputs.append({"manifest": str(path), "summary_path": res["summary_path"]})
+        report_path = generate_results_markdown(args.runs_dir, args.output)
+        result = {"manifests_run": outputs, "report_path": str(report_path)}
+    elif args.command == "generate-report":
+        report_path = generate_results_markdown(args.runs_dir, args.output)
+        result = {"report_path": str(report_path)}
     else:
         config = RunConfig(seed=args.seed, episodes=args.episodes, vocab_size=args.vocab_size,
                            message_length=args.message_length, learning_rate=args.learning_rate,

@@ -1,0 +1,129 @@
+{
+  "config": {
+    "dataset": "congressional_voting_records",
+    "seed": 0,
+    "data_dir": "data",
+    "splits_dir": "data/splits",
+    "held_out_combinations": [],
+    "held_out_columns": [
+      0,
+      5
+    ]
+  },
+  "dataset": "congressional_voting_records",
+  "source_url": "https://archive.ics.uci.edu/static/public/105/congressional+voting+records.zip",
+  "n_samples": 435,
+  "n_features": 16,
+  "feature_names": [
+    "handicapped_infants",
+    "water_project_cost_sharing",
+    "adoption_of_budget_resolution",
+    "physician_fee_freeze",
+    "el_salvador_aid",
+    "religious_groups_in_schools",
+    "anti_satellite_test_ban",
+    "aid_to_nicaraguan_contras",
+    "mx_missile",
+    "immigration",
+    "synfuels_corporation_cutback",
+    "education_spending",
+    "superfund_right_to_sue",
+    "crime",
+    "duty_free_exports",
+    "export_administration_act_south_africa"
+  ],
+  "label_names": [
+    "democrat",
+    "republican"
+  ],
+  "split_sha256": "b1f47013dd7f350f3026bd2ac0a7fc0a24f0511e3868a7ad80b99688de5e8b84",
+  "split_type": "stratified",
+  "split_sizes": {
+    "train": 305,
+    "validation": 65,
+    "test": 65
+  },
+  "encoded_feature_count": 48,
+  "training_categories": [
+    [
+      "0",
+      "1",
+      "2"
+    ],
+    [
+      "0",
+      "1",
+      "2"
+    ],
+    [
+      "0",
+      "1",
+      "2"
+    ],
+    [
+      "0",
+      "1",
+      "2"
+    ],
+    [
+      "0",
+      "1",
+      "2"
+    ],
+    [
+      "0",
+      "1",
+      "2"
+    ],
+    [
+      "0",
+      "1",
+      "2"
+    ],
+    [
+      "0",
+      "1",
+      "2"
+    ],
+    [
+      "0",
+      "1",
+      "2"
+    ],
+    [
+      "0",
+      "1",
+      "2"
+    ],
+    [
+      "0",
+      "1",
+      "2"
+    ],
+    [
+      "0",
+      "1",
+      "2"
+    ],
+    [
+      "0",
+      "1",
+      "2"
+    ],
+    [
+      "0",
+      "1",
+      "2"
+    ],
+    [
+      "0",
+      "1",
+      "2"
+    ],
+    [
+      "0",
+      "1",
+      "2"
+    ]
+  ]
+}

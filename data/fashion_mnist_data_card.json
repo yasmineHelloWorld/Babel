@@ -1,0 +1,19 @@
+{
+  "name": "fashion_mnist",
+  "source": "Zalando Research Fashion-MNIST",
+  "rows": 70000,
+  "features": 784,
+  "classes": [
+    "T-shirt/top",
+    "Trouser",
+    "Pullover",
+    "Dress",
+    "Coat",
+    "Sandal",
+    "Shirt",
+    "Sneaker",
+    "Bag",
+    "Ankle boot"
+  ],
+  "preprocessing": "StandardScaler + PCA fit strictly on X_train"
+}

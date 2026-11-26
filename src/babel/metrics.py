@@ -1,9 +1,19 @@
 """Predictive and language-structure metrics for discrete messages."""
 
 from collections import Counter, defaultdict
-from itertools import combinations
+from collections.abc import Callable, Sequence
+from itertools import combinations, permutations
 
 import numpy as np
+from scipy.optimize import linear_sum_assignment
+from sklearn.metrics import (
+    accuracy_score,
+    confusion_matrix,
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
 
 
 def _entropy(values) -> float:
@@ -28,7 +38,39 @@ def _mutual_information(left, right) -> float:
     for (x, y), count in joint.items():
         p_xy = count / total
         result += p_xy * np.log2((count * total) / (left_counts[x] * right_counts[y]))
-    return float(result)
+    return float(max(0.0, result))
+
+
+def positional_disentanglement(messages, attributes) -> float:
+    """Chaabouni et al. (2020) PosDis over discrete messages and ground-truth attributes.
+
+    For message length L and A attributes:
+        PosDis = (1/L) * sum_i (I(m_i; a_{i*}) - max_{j != i*} I(m_i; a_j)) / H(m_i)
+    where i* = argmax_j I(m_i; a_j) and positions with H(m_i) == 0 contribute 0.
+    """
+    msg_arr = np.asarray(messages, dtype=np.int64)
+    attr_arr = np.asarray(attributes)
+    if msg_arr.ndim != 2 or attr_arr.ndim != 2:
+        raise ValueError("messages (N, L) and attributes (N, A) must both be 2D arrays")
+    if len(msg_arr) != len(attr_arr) or len(msg_arr) == 0:
+        raise ValueError("messages and attributes must have matching non-zero row counts")
+    if msg_arr.shape[1] == 0 or attr_arr.shape[1] < 2:
+        raise ValueError("PosDis requires at least 1 message position and 2 attributes")
+
+    message_length = msg_arr.shape[1]
+    n_attrs = attr_arr.shape[1]
+    total_score = 0.0
+    for pos in range(message_length):
+        symbols = msg_arr[:, pos].tolist()
+        h_m = _entropy(symbols)
+        if h_m <= 1e-12:
+            continue
+        mis = [_mutual_information(symbols, attr_arr[:, j].tolist()) for j in range(n_attrs)]
+        best_idx = int(np.argmax(mis))
+        best_mi = mis[best_idx]
+        second_mi = max(mis[j] for j in range(n_attrs) if j != best_idx)
+        total_score += (best_mi - second_mi) / h_m
+    return float(total_score / message_length)
 
 
 def compute_language_metrics(messages, shape_ids, color_ids, object_ids=None) -> dict:
@@ -81,12 +123,19 @@ def compute_language_metrics(messages, shape_ids, color_ids, object_ids=None) ->
         position_mi[f"{position}:color"] = _mutual_information(symbols, flat_colors)
         position_entropies[str(position)] = _entropy(symbols)
 
+    attr_matrix = np.column_stack([flat_shapes, flat_colors])
+    posdis = positional_disentanglement(flat_messages, attr_matrix)
+    h_objects = _entropy(flat_objects)
+    object_mi = max(0.0, float(h_objects - ambiguity))
+
     return {
         "message_entropy_bits": _entropy(message_tuples),
         "position_entropies_bits": position_entropies,
         "shape_mutual_information_bits": _mutual_information(message_tuples, flat_shapes),
         "color_mutual_information_bits": _mutual_information(message_tuples, flat_colors),
+        "object_mutual_information_bits": object_mi,
         "position_property_mutual_information_bits": position_mi,
+        "posdis": posdis,
         "active_vocabulary": len(active_symbols),
         "active_symbols": sorted(active_symbols),
         "ambiguity_bits": float(ambiguity),
@@ -135,6 +184,170 @@ def topographic_similarity(messages, feature_vectors) -> float:
     if np.std(message_ranks) == 0 or np.std(feature_ranks) == 0:
         return 0.0
     return float(np.corrcoef(message_ranks, feature_ranks)[0, 1])
+
+
+def topographic_similarity_with_pvalue(
+    messages,
+    feature_vectors,
+    *,
+    n_permutations: int = 500,
+    seed: int = 0,
+) -> tuple[float, float]:
+    """Compute topographic similarity and a two-sided permutation p-value."""
+    msg_arr = np.asarray(messages)
+    feat_arr = np.asarray(feature_vectors)
+    observed = topographic_similarity(msg_arr, feat_arr)
+    if n_permutations < 1:
+        raise ValueError("n_permutations must be >= 1")
+    rng = np.random.default_rng(seed)
+    extreme_count = 0
+    for _ in range(n_permutations):
+        perm = rng.permutation(len(msg_arr))
+        null_val = topographic_similarity(msg_arr[perm], feat_arr)
+        if abs(null_val) >= abs(observed) - 1e-12:
+            extreme_count += 1
+    p_value = (extreme_count + 1) / (n_permutations + 1)
+    return float(observed), float(p_value)
+
+
+def compute_classification_metrics(
+    y_true,
+    y_pred,
+    y_proba=None,
+    *,
+    labels: Sequence[int] | None = None,
+) -> dict:
+    """Compute standard ML metrics: Accuracy, Precision/Recall/F1, Confusion Matrix, ROC AUC."""
+    yt = np.asarray(y_true)
+    yp = np.asarray(y_pred)
+    if yt.ndim != 1 or yp.ndim != 1 or len(yt) != len(yp):
+        raise ValueError("y_true and y_pred must be 1D arrays of equal length")
+    present_labels = list(labels) if labels is not None else sorted(set(yt.tolist()) | set(yp.tolist()))
+    cm = confusion_matrix(yt, yp, labels=present_labels)
+    roc_auc: float | None = None
+    if y_proba is not None:
+        proba = np.asarray(y_proba, dtype=np.float64)
+        unique_true = np.unique(yt)
+        if len(unique_true) >= 2:
+            try:
+                if proba.ndim == 2 and proba.shape[1] == 2 and len(present_labels) == 2:
+                    roc_auc = float(roc_auc_score(yt, proba[:, 1]))
+                elif proba.ndim == 2 and len(unique_true) == proba.shape[1]:
+                    roc_auc = float(roc_auc_score(yt, proba, multi_class="ovr", average="macro", labels=present_labels))
+                elif proba.ndim == 1 and len(unique_true) == 2:
+                    roc_auc = float(roc_auc_score(yt, proba))
+            except ValueError:
+                roc_auc = None
+
+    return {
+        "accuracy": float(accuracy_score(yt, yp)),
+        "precision_macro": float(precision_score(yt, yp, labels=present_labels, average="macro", zero_division=0)),
+        "precision_weighted": float(precision_score(yt, yp, labels=present_labels, average="weighted", zero_division=0)),
+        "recall_macro": float(recall_score(yt, yp, labels=present_labels, average="macro", zero_division=0)),
+        "recall_weighted": float(recall_score(yt, yp, labels=present_labels, average="weighted", zero_division=0)),
+        "f1_macro": float(f1_score(yt, yp, labels=present_labels, average="macro", zero_division=0)),
+        "f1_weighted": float(f1_score(yt, yp, labels=present_labels, average="weighted", zero_division=0)),
+        "confusion_matrix": cm.tolist(),
+        "labels": [int(v) for v in present_labels],
+        "roc_auc_ovr": roc_auc,
+    }
+
+
+def compute_multi_attribute_metrics(y_true, y_pred) -> dict:
+    """Compute exact joint and per-attribute accuracy for multi-attribute targets (N, A)."""
+    yt = np.asarray(y_true)
+    yp = np.asarray(y_pred)
+    if yt.ndim != 2 or yp.shape != yt.shape:
+        raise ValueError("y_true and y_pred must be 2D arrays with identical shape")
+    per_attr = [float(np.mean(yt[:, col] == yp[:, col])) for col in range(yt.shape[1])]
+    exact = float(np.mean(np.all(yt == yp, axis=1)))
+    return {
+        "exact_accuracy": exact,
+        "per_attribute_accuracy": per_attr,
+        "mean_attribute_accuracy": float(np.mean(per_attr)),
+    }
+
+
+def _align_messages_hungarian(
+    source_messages: np.ndarray,
+    target_messages: np.ndarray,
+    vocab_size: int,
+) -> np.ndarray:
+    """Align source_messages to target_messages via label-free Hungarian symbol matching."""
+    n_samples, message_length = source_messages.shape
+    if n_samples == 0:
+        return source_messages.copy()
+    pos_perms = list(permutations(range(message_length))) if message_length <= 3 else [tuple(range(message_length))]
+    best_score = -1
+    best_aligned = source_messages
+    for pos_perm in pos_perms:
+        reordered = source_messages[:, pos_perm]
+        candidate = np.empty_like(reordered)
+        score = 0
+        for pos in range(message_length):
+            cooccur = np.zeros((vocab_size, vocab_size), dtype=np.int64)
+            np.add.at(cooccur, (reordered[:, pos], target_messages[:, pos]), 1)
+            row_ind, col_ind = linear_sum_assignment(-cooccur)
+            mapping = np.arange(vocab_size, dtype=np.int64)
+            mapping[row_ind] = col_ind
+            candidate[:, pos] = mapping[reordered[:, pos]]
+            score += int(cooccur[row_ind, col_ind].sum())
+        if score > best_score:
+            best_score = score
+            best_aligned = candidate
+    return best_aligned
+
+
+def _accuracy_from_listener(predict_fn: Callable[[np.ndarray], np.ndarray | tuple[np.ndarray, ...]], messages: np.ndarray, targets: np.ndarray) -> float:
+    preds = predict_fn(messages)
+    if isinstance(preds, tuple):
+        pred_ids = np.column_stack([np.argmax(head, axis=-1) for head in preds])
+        return float(np.mean(np.all(pred_ids == targets, axis=1)))
+    pred_arr = np.asarray(preds)
+    if targets.ndim == 2:
+        if pred_arr.ndim == 3:
+            pred_ids = np.argmax(pred_arr, axis=-1)
+        else:
+            pred_ids = pred_arr
+        return float(np.mean(np.all(pred_ids == targets, axis=1)))
+    pred_ids = np.argmax(pred_arr, axis=-1) if pred_arr.ndim == 2 else pred_arr
+    return float(np.mean(pred_ids == targets))
+
+
+def compute_dialect_matrix(
+    speaker_messages: Sequence[np.ndarray],
+    listener_predict_fns: Sequence[Callable[[np.ndarray], np.ndarray | tuple[np.ndarray, ...]]],
+    targets: np.ndarray,
+    *,
+    vocab_size: int | None = None,
+) -> dict:
+    """Evaluate N x N cross-play compatibility A_ij = Acc(S_i -> L_j), raw and Hungarian-aligned."""
+    n_agents = len(speaker_messages)
+    if n_agents != len(listener_predict_fns) or n_agents < 2:
+        raise ValueError("Need at least two matched speaker message arrays and listener predict functions")
+    msgs_list = [np.asarray(m, dtype=np.int64) for m in speaker_messages]
+    target_arr = np.asarray(targets)
+    k = vocab_size or (max(int(m.max()) for m in msgs_list) + 1)
+
+    raw_matrix = np.zeros((n_agents, n_agents), dtype=np.float64)
+    aligned_matrix = np.zeros((n_agents, n_agents), dtype=np.float64)
+    for i in range(n_agents):
+        for j in range(n_agents):
+            raw_matrix[i, j] = _accuracy_from_listener(listener_predict_fns[j], msgs_list[i], target_arr)
+            if i == j:
+                aligned_matrix[i, j] = raw_matrix[i, j]
+            else:
+                remapped = _align_messages_hungarian(msgs_list[i], msgs_list[j], k)
+                aligned_matrix[i, j] = _accuracy_from_listener(listener_predict_fns[j], remapped, target_arr)
+
+    off_diag_mask = ~np.eye(n_agents, dtype=bool)
+    return {
+        "raw_matrix": raw_matrix.tolist(),
+        "aligned_matrix": aligned_matrix.tolist(),
+        "diagonal_mean": float(np.mean(np.diag(raw_matrix))),
+        "raw_off_diagonal_mean": float(np.mean(raw_matrix[off_diag_mask])),
+        "hungarian_off_diagonal_mean": float(np.mean(aligned_matrix[off_diag_mask])),
+    }
 
 
 def _average_ranks(values) -> np.ndarray:

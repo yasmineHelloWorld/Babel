@@ -1,5 +1,7 @@
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
+
+import yaml
 
 
 @dataclass(frozen=True)
@@ -46,8 +48,8 @@ class TabularConfig:
     held_out_columns: tuple[int, int] = (0, 5)
 
     def validate(self) -> None:
-        if self.dataset not in {"congressional_voting_records", "car_evaluation"}:
-            raise ValueError("dataset must be 'congressional_voting_records' or 'car_evaluation'")
+        if self.dataset not in {"congressional_voting_records", "car_evaluation", "wine"}:
+            raise ValueError("dataset must be 'congressional_voting_records', 'car_evaluation', or 'wine'")
         if any(len(pair) != 2 for pair in self.held_out_combinations):
             raise ValueError("each held-out combination must contain two integer-coded values")
         if len(self.held_out_columns) != 2 or min(self.held_out_columns) < 0:
@@ -69,3 +71,71 @@ class TabularConfig:
     def split_path(self) -> Path:
         suffix = "-held-out" if self.held_out_combinations else ""
         return Path(self.splits_dir) / f"{self.dataset}{suffix}.npz"
+
+
+@dataclass(frozen=True)
+class ExperimentConfig:
+    """Typed YAML manifest for neural/tabular multi-seed sweeps and real-data benchmarks."""
+
+    name: str
+    dataset: str
+    message_length: int = 1
+    vocab_sizes: tuple[int, ...] = (2, 3, 4, 6, 8, 16)
+    seeds: tuple[int, ...] = (0, 1, 2, 3, 4)
+    epochs: int = 120
+    batch_size: int = 64
+    hidden_dim: int = 64
+    speaker_lr: float = 3e-3
+    listener_lr: float = 5e-3
+    entropy_bonus: float = 0.02
+    baseline_ema: float = 0.05
+    listener_mode: str = "holistic"
+    training_mode: str = "hybrid_ce"
+    pca_components: int = 32
+    target_columns: tuple[int, ...] = ()
+    held_out_combinations: tuple[tuple[int, int], ...] = ()
+    held_out_columns: tuple[int, int] = (0, 5)
+    data_dir: str = "data"
+    splits_dir: str = "data/splits"
+    runs_dir: str = "runs"
+    extra: dict = field(default_factory=dict)
+
+    def validate(self) -> None:
+        if not self.name:
+            raise ValueError("experiment name must be non-empty")
+        if self.message_length < 1:
+            raise ValueError("message_length must be >= 1")
+        if not self.vocab_sizes or any(k < 2 for k in self.vocab_sizes):
+            raise ValueError("all vocab_sizes must be >= 2")
+        if not self.seeds:
+            raise ValueError("at least one seed is required")
+        if self.epochs < 1 or self.batch_size < 1 or self.hidden_dim < 4:
+            raise ValueError("epochs, batch_size, and hidden_dim must be positive")
+        if self.listener_mode not in {"holistic", "structured"}:
+            raise ValueError("listener_mode must be 'holistic' or 'structured'")
+        if self.training_mode not in {"hybrid_ce", "both_reinforce"}:
+            raise ValueError("training_mode must be 'hybrid_ce' or 'both_reinforce'")
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, values: dict) -> "ExperimentConfig":
+        normalized = dict(values)
+        for key in ("vocab_sizes", "seeds", "target_columns"):
+            if key in normalized:
+                normalized[key] = tuple(int(v) for v in normalized[key])
+        if "held_out_combinations" in normalized:
+            normalized["held_out_combinations"] = tuple(tuple(int(x) for x in pair) for pair in normalized["held_out_combinations"])
+        if "held_out_columns" in normalized:
+            normalized["held_out_columns"] = tuple(int(v) for v in normalized["held_out_columns"])
+        return cls(**normalized)
+
+    @classmethod
+    def from_yaml(cls, path: str | Path) -> "ExperimentConfig":
+        payload = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+        if not isinstance(payload, dict):
+            raise ValueError(f"YAML config must be a mapping: {path}")
+        cfg = cls.from_dict(payload)
+        cfg.validate()
+        return cfg
