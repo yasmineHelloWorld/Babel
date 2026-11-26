@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Babel – the whispering dart</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌑%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Pixelify+Sans:wght@400;600&family=Cormorant+Garamond:ital,wght@1,500&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#0b0a1e;--edge:#3a3c88;--ink:#e7e3ff;--pk:#6d70d8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 'Pixelify Sans','Courier New',monospace;min-height:100vh}
+#app{max-width:1180px;margin:0 auto;padding:12px}
+button{font:inherit;color:inherit;cursor:pointer}button:focus-visible{outline:2px solid #ff6bd0;outline-offset:2px}
+.cw{position:relative;border:3px solid var(--edge);box-shadow:0 0 0 2px #14154a,0 0 50px #6d70d833;overflow:hidden;background:#0b0a24}
+.cw::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,transparent 55%,#000a 100%),repeating-linear-gradient(0deg,#0000 0 2px,#0000000d 2px 3px)}
+#cv{display:block;width:100%;aspect-ratio:16/9;image-rendering:pixelated;touch-action:manipulation}
+.tt{position:absolute;left:2.4%;top:3%;z-index:2;max-width:52%;pointer-events:none;text-shadow:0 2px 8px #000}
+.tt h1{margin:0;font:700 clamp(22px,4.6vw,52px)/1 'UnifrakturCook',serif;color:#f1ecff}.tt h1 span{color:#e0455b;margin:0 .08em}
+.tt p{margin:.5em 0 0;font:italic 500 clamp(10px,1.35vw,16px)/1.3 'Cormorant Garamond',serif;color:#cfc8f5}
+.lb{position:absolute;top:72.8%;transform:translateX(-50%);z-index:2;pointer-events:none;font-size:clamp(9px,1.25vw,14px);padding:0 8px;background:#0b0a24d9;border:1px solid var(--pk)}
+.hint{position:absolute;right:2%;bottom:3%;z-index:2;font-size:clamp(9px,1.1vw,13px);color:#9d9ad8;pointer-events:none;text-align:right}
+.cap{min-height:44px;margin:10px 0 6px;text-align:center;color:#cfc8f5}
+.hud{display:grid;grid-template-columns:220px 1fr 210px;gap:10px}
+.bx{background:#12102e;border:2px solid var(--edge);padding:10px 12px}
+.bx h2{margin:0 0 6px;font:600 15px 'Pixelify Sans',monospace;color:#ff9be4}
+.row{display:flex;justify-content:space-between;font-size:14px;margin-top:4px}.row b{color:#fff}
+.m{height:8px;border:1px solid var(--pk);margin-top:2px}.m i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff6bd0,#ffd23f);transition:width .4s}
+.lg{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.sl{display:flex;flex-direction:column;align-items:center;gap:5px;padding:6px 2px;border:1px solid #2a2c78;background:#0d0c25}
+.sl .dt{width:12px;height:12px;border-radius:50%;display:block;margin:2px 0}.no{color:#4a4a88;height:21px}
+.bar{display:block;width:80%;height:4px;background:#1c1c4a}.bar b{display:block;height:100%;background:#4fe39a;transition:width .4s}
+.ctl{display:flex;flex-direction:column;gap:8px}
+.pb{background:#2a2c78;border:2px solid var(--pk);padding:6px 12px;box-shadow:0 4px 0 #14154a;text-align:left}
+.pb:hover{background:#3a3da0}.pb:active{transform:translateY(3px);box-shadow:0 1px 0 #14154a}.pb.on{background:#7a2a5a;border-color:#ff6bd0}
+kbd{float:right;font:600 11px 'Pixelify Sans',monospace;color:#9d9ad8;border:1px solid #4a4a88;padding:0 5px;margin-left:8px}
+.tray{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:12px}
+.op{width:64px;height:64px;background:#efeaff;border:3px solid #b9b4e8;display:flex;align-items:center;justify-content:center;padding:0}
+.op:hover:not(:disabled){border-color:#ff6bd0;transform:translateY(-3px)}.op.ok{border-color:#4fe39a}.op.bad{border-color:#ff6b6b}.op:disabled{cursor:default}
+.ov{position:fixed;inset:0;background:#05030ce6;display:none;align-items:center;justify-content:center;padding:16px;z-index:9}.ov.on{display:flex;animation:fi .8s}
+@keyframes fi{from{opacity:0}}
+.vd{text-align:center;max-width:460px;border:3px double var(--pk);background:#12102e;padding:26px 30px}
+.vd h2{font:700 44px 'UnifrakturCook',serif;margin:0 0 6px}.vd .sc{font-size:30px;margin:10px 0}.vd .sc b{color:#ffd23f}.vd p{margin:6px 0 16px;font:italic 500 20px 'Cormorant Garamond',serif;color:#cfc8f5}
+.vd .row{justify-content:center;gap:10px;flex-wrap:wrap}
+@media(max-width:900px){.hud{grid-template-columns:1fr}.lg{grid-template-columns:repeat(4,1fr)}.hint{display:none}.tt{max-width:70%}}
+</style></head>
+<body><div id="app">
+<div class="cw">
+ <canvas id="cv" aria-label="Pixel-art scene: a Speaker, a Listener and a Rival on the banks of black water under a red moon"></canvas>
+ <div class="tt"><h1>Babel<span>/</span>the whispering dart</h1><p>Two figures with no shared tongue pass sealed runes across black water. Watch a language form, then be judged against the rival.</p></div>
+ <div class="lb" style="left:16.9%">The Speaker</div><div class="lb" style="left:77.5%">The Listener</div><div class="lb" style="left:88.1%">The Rival</div>
+ <div class="hint">Click the moon, the water, the figures, the sky.</div>
+ <div id="ws-dot" title="Backend disconnected" style="position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:#ff4444;z-index:9;box-shadow:0 0 6px #ff4444;transition:background .4s,box-shadow .4s"></div>
+</div>
+<div class="cap" id="cap">Press Whisper. The Speaker will send a sealed dart across the black water.</div>
+<div class="hud">
+ <div class="bx"><h2>The tide of language</h2>
+  <div class="row"><span>Epoch</span><b id="ep">0</b></div>
+  <div class="row"><span>Shared code</span></div><div class="m"><i id="cm"></i></div>
+  <div class="row"><span>Listener reads</span><b id="al">0%</b></div>
+  <div class="row"><span>Rival reads</span><b id="ar">0%</b></div></div>
+ <div class="bx"><h2>Lexicon: runes settling into meaning</h2><div class="lg" id="lx"></div></div>
+ <div class="bx ctl"><button class="pb" data-a="w">Whisper<kbd>Space</kbd></button><button class="pb" data-a="e" id="bE">Evolve: off<kbd>E</kbd></button><button class="pb" data-a="s">Skip +25 epochs<kbd>S</kbd></button><button class="pb" data-a="j">Begin the judgment<kbd>J</kbd></button><button class="pb" data-a="m" id="bM">Sound: off<kbd>M</kbd></button></div>
+</div>
+<div class="tray" id="tray" hidden><span>Which did the Speaker mean?</span><div id="tr" style="display:flex;gap:10px"></div></div>
+<div class="ov" id="vd"><div class="vd"><h2>Verdict</h2><div class="sc">You <b id="vY">0</b> – <b id="vR">0</b> Rival</div><p id="vT"></p><div class="row"><button class="pb" id="again">Watch a new language form</button><button class="pb" id="keep">Keep watching</button></div></div></div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const W=320,H=180,GY=124,WL=112,WR=208,MX=176,MY=48,MR=13;
+const cv=$('#cv'),ctx=cv.getContext('2d');cv.width=W;cv.height=H;
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const rnd=n=>Math.floor(Math.random()*n),lerp=(a,b,u)=>a+(b-a)*u,tri=u=>1-Math.abs(((u%2)+2)%2-1);
+function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const R=(x,y,w,h,c,a=1)=>{ctx.globalAlpha=a;ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),w,h)};
+const disc=(cx,cy,r,c,a=1)=>{for(let dy=-r;dy<=r;dy++){const w=Math.floor(Math.sqrt(r*r-dy*dy));R(cx-w,cy+dy,2*w+1,1,c,a)}};
+const CO=['#ff4d5e','#4d9bff','#ffd23f','#3be08f'],CN=['crimson','azure','gold','jade'],SN=['triangle','orb','square','diamond'];
+const P=['<polygon points="9,2 16,15 2,15"/>','<circle cx="9" cy="9" r="7"/>','<rect x="3" y="3" width="12" height="12"/>','<polygon points="9,1 17,9 9,17 1,9"/>'];
+const mixc=(a,b,u)=>`rgb(${a.map((v,i)=>Math.round(lerp(v,b[i],u))).join()})`;
+const SKY=[...Array(H/4)].map((_,i)=>{const u=i/(H/4);return u<.6?mixc([9,8,30],[34,24,78],u/.6):mixc([34,24,78],[78,38,98],(u-.6)/.4)});
+/* sprites */
+const SPK=["..rrrrrr..",".rRRrrrrd.",".rrrrrrrrd",".rkkrrkkrd",".rkkrrkkrd",".rrrrrrrrd",".rrkkkkrrd",".rrrrrrrrd",".rrrrrrrrd","..rrrrrrd.","..rr..rr..","..rr..rr..","..kk..kk.."];
+const LIS=["..ccccc..",".cCCcccc.",".ccccccd.",".ckkcckkd",".ckkcckkd",".ccccccdd",".cbbbbbbd",".ccccccdd",".ccccccdd","..cc.cc..","..cc.cc..","..kk.kk.."];
+const RIV=["...hhhhh...","...hhhhh...","..hhhhhhh..","hhhhhhhhhhh","..fffffff..","..fkfffkf..","..fffffff..","..ffkkkff..","...bbbbb...","..bbbbbbb..","..bbbbbbb..","..bb...bb..","..bb...bb..","..kk...kk.."];
+const PAL={sp:{r:'#d6333a',R:'#f26a5e',d:'#9c2230',k:'#1a0d22'},li:{c:'#31c9c4',C:'#7ff0ea',d:'#1f8f9a',b:'#1a5f78',k:'#102030'},rv:{h:'#15121f',f:'#cfc9e6',k:'#15121f',b:'#2e2850'}};
+const ent={sp:{x:54,m:SPK,p:PAL.sp,hy:0,vy:0,fl:0,ph:0,sign:{mode:'obj',o:{s:0,c:2}}},li:{x:248,m:LIS,p:PAL.li,hy:0,vy:0,fl:0,ph:2,sign:{mode:'q'}},rv:{x:282,m:RIV,p:PAL.rv,hy:0,vy:0,fl:0,ph:4,sign:{mode:'q'}}};
+const QM=["01110","10001","00010","00100","00100","00000","00100"];
+/* runes */
+const RUNE=[...Array(16)].map((_,i)=>{const r=rng(i*77+5),g=[];for(let y=0;y<7;y++){const row=[r()<.5?1:0,r()<.5?1:0,r()<.55?1:0];row.push(row[1],row[0]);g.push(row)}return g});
+const drawRune=(id,x,y,c,a)=>RUNE[id].forEach((row,j)=>row.forEach((b,i)=>{if(b)R(x+i,y+j,1,1,c,a)}));
+const runeSVG=(id,col)=>`<svg width="15" height="21" viewBox="0 0 5 7" shape-rendering="crispEdges" fill="${col}">${RUNE[id].map((row,y)=>row.map((b,x)=>b?`<rect x="${x}" y="${y}" width="1" height="1"/>`:'').join('')).join('')}</svg>`;
+/* decor */
+const sr=rng(11),STARS=[...Array(80)].map(()=>({x:sr()*W*1.1-8,y:sr()*GY*.85,p:sr()*6.28,s:sr()<.1?2:1,f:.6+sr()*1.8}));
+const SL=[[30,44],[66,60],[100,34],[132,66],[220,40],[252,22],[286,48],[300,74]];
+const FF=[...Array(24)].map((_,i)=>({x:sr()<.5?sr()*WL:WR+sr()*(W-WR),y:GY-34+sr()*60,p:sr()*6.28}));
+const REED=[...Array(60)].map(()=>({x:sr()*W,h:5+sr()*12,s:sr()<.5?-1:1}));
+/* state */
+let EP,A,B,use,hist,dart=null,busy=false,auto=false,autoT=0,snd=false,J={on:false};
+const P_=[],RP=[],SS=[];
+let t=0,mx=0,my=0,tmx=0,tmy=0,shake=0,moonP=0,flashA=0;
+const cons=()=>1-Math.exp(-EP/45),kL=()=>1-Math.exp(-EP/55),kR=()=>1-Math.exp(-EP/120);
+function newLang(){const ids=[...Array(16).keys()].sort(()=>Math.random()-.5);A=ids.slice(0,4);B=ids.slice(4,8);EP=0;use=[...Array(8)].map(()=>Array(16).fill(0));hist={l:[],r:[]}}
+const newObj=()=>({s:rnd(4),c:rnd(4)}),other=v=>{let n;do{n=rnd(4)}while(n==v);return n};
+const guess=(o,q)=>({s:Math.random()<q?o.s:other(o.s),c:Math.random()<q?o.c:other(o.c)});
+function emit(o){const c=cons(),rs=Math.random()<c?A[o.s]:rnd(16),rc=Math.random()<c?B[o.c]:rnd(16);use[o.s][rs]++;use[4+o.c][rc]++;return[rs,rc]}
+function dom(i){const u=use[i],tot=u.reduce((a,b)=>a+b,0);if(!tot)return{r:-1,st:0};let m=0;u.forEach((v,j)=>{if(v>u[m])m=j});return{r:m,st:u[m]/tot*Math.min(1,tot/8)}}
+const push=(a,v)=>{a.push(v?1:0);if(a.length>20)a.shift()};
+/* audio */
+let ac,mg;
+function aud(){if(!snd||ac)return;ac=new (window.AudioContext||window.webkitAudioContext)();mg=ac.createGain();mg.gain.value=.6;mg.connect(ac.destination);
+ [55,82.4,110.3].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.type=i?'sine':'triangle';o.frequency.value=f;g.gain.value=.025;o.connect(g);g.connect(mg);o.start()})}
+function tone(f,d,ty='triangle',v=.1,sl=0){if(!ac||!snd)return;const o=ac.createOscillator(),g=ac.createGain(),n=ac.currentTime;o.type=ty;o.frequency.setValueAtTime(f,n);if(sl)o.frequency.exponentialRampToValueAtTime(f*sl,n+d);g.gain.setValueAtTime(v,n);g.gain.exponentialRampToValueAtTime(.001,n+d);o.connect(g);g.connect(mg);o.start();o.stop(n+d)}
+/* fx */
+const spark=(x,y,n,c,sp=1,l=.8)=>{for(let i=0;i<n;i++){const a=Math.random()*6.28,v=(.3+Math.random())*sp;P_.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l,m:l,c,s:Math.random()<.2?2:1})}};
+const shoot=(x,y)=>SS.push({x,y,vx:-90-rnd(50),vy:28+rnd(20),l:1});
+const cap=s=>{$('#cap').textContent=s};
+/* round logic */
+function launch(d,fast,toX){dart={t:0,d:fast?.55:1.5,x0:ent.sp.x+8,y0:GY-18,x1:toX,y1:GY-18,x:ent.sp.x+8,y:GY-18,fast,...d};ent.sp.vy=1.8;ent.sp.fl=.8;moonP=.6;spark(ent.sp.x+8,GY-18,10,'#ffd23f',1,.6);tone(320,fast?.25:.6,'sawtooth',.05,2.5)}
+function whisper(fast){if(busy||dart||J.on)return;aud();busy=true;const o=newObj();EP++;const runes=emit(o);
+ ent.sp.sign={mode:'obj',o};ent.li.sign={mode:'q'};ent.rv.sign={mode:'q'};cap('The Speaker whispers a sealed dart across the black water…');hud();launch({o,runes},fast,ent.li.x-9)}
+function arrive(d){spark(d.x1,d.y1,24,'#ffd23f',1.4,.9);spark(d.x1,d.y1,12,'#7ff0ea',1,.8);RP.push({x:d.x1,y:GY+14,r:1,l:1});shake=.6;moonP=1;tone(660,.5);setTimeout(()=>tone(990,.7),90);
+ if(J.on){J.wait=true;ent.rv.vy=2;ent.rv.fl=1;ent.li.vy=1.5;showTray();return}
+ const o=d.o,q=.25+.72*cons()*kL(),r=.3+.4*kR(),gL=guess(o,q),gR=guess(o,r),fast=d.fast;
+ ent.li.vy=2.2;ent.li.fl=1;ent.rv.vy=1.2;ent.li.sign={mode:'guess',o:gL,res:null};ent.rv.sign={mode:'guess',o:gR,res:null};
+ setTimeout(()=>{const a=gL.s==o.s&&gL.c==o.c,b=gR.s==o.s&&gR.c==o.c;ent.li.sign.res=a;ent.rv.sign.res=b;push(hist.l,a);push(hist.r,b);ent.sp.fl=.7;
+  if(a){tone(880,.35);spark(ent.li.x,GY-16,16,'#4fe39a',1,.8)}else tone(170,.4,'sawtooth',.05);
+  cap(a?'The Listener understood the whisper.':'The Listener missed the meaning.');hud();setTimeout(()=>busy=false,fast?120:500)},fast?220:800)}
+function skip(){if(busy||dart||J.on)return;aud();for(let i=0;i<25;i++){EP++;emit(newObj());const q=.25+.72*cons()*kL(),r=.3+.4*kR();push(hist.l,Math.random()<q*q);push(hist.r,Math.random()<r*r)}
+ for(let i=0;i<5;i++)RP.push({x:WL+10+rnd(WR-WL-20),y:GY+8+rnd(40),r:1,l:1});flashA=.5;shake=.8;moonP=1;tone(120,1.4,'sine',.15,3);cap('Twenty-five epochs pass in a breath. The runes settle.');hud()}
+function judge(){if(J.on||busy||dart)return;aud();auto=false;$('#bE').firstChild.textContent='Evolve: off';$('#bE').classList.remove('on');J={on:true,i:0,you:0,riv:0,wait:false};
+ if(EP<12)cap('The language is still noise. Evolve it first for a fair judgment…');setTimeout(judgeNext,EP<12?1600:300)}
+function judgeNext(){if(J.i>=8){verdict();return}J.i++;const o=newObj();J.o=o;const runes=emit(o);ent.sp.sign={mode:'q'};ent.li.sign={mode:'none'};ent.rv.sign={mode:'q'};
+ $('#tray').hidden=true;cap(`Judgment ${J.i} of 8: the dart carries two runes. Read them against the Lexicon.`);hud();launch({o,runes},false,(ent.li.x+ent.rv.x)/2)}
+function showTray(){const o=J.o,op=[o];while(op.length<4){const n=newObj();if(!op.some(x=>x.s==n.s&&x.c==n.c))op.push(n)}J.opts=op.sort(()=>Math.random()-.5);$('#tray').hidden=false;
+ $('#tr').innerHTML=J.opts.map((x,i)=>`<button class="op" data-o="${i}" aria-label="${CN[x.c]} ${SN[x.s]}"><svg width="36" height="36" viewBox="0 0 18 18" fill="${CO[x.c]}">${P[x.s]}</svg></button>`).join('')}
+function answer(i){if(!J.wait)return;J.wait=false;const x=J.opts[i],o=J.o,ok=x.s==o.s&&x.c==o.c,gR=guess(o,.3+.4*kR()),rok=gR.s==o.s&&gR.c==o.c;if(ok)J.you++;if(rok)J.riv++;
+ ent.sp.sign={mode:'obj',o};ent.rv.sign={mode:'guess',o:gR,res:rok};
+ document.querySelectorAll('.op').forEach((b,j)=>{b.classList.toggle('ok',J.opts[j]===o);b.classList.toggle('bad',j==i&&!ok);b.disabled=true});
+ if(ok){tone(880,.4);spark(ent.sp.x,GY-16,18,'#4fe39a',1.2,.9)}else tone(170,.5,'sawtooth',.06);ent.sp.fl=.8;
+ cap(`${ok?'You read it true.':'Not that one.'} Rival: ${rok?'correct':'wrong'}. You ${J.you} – ${J.riv} Rival.`);setTimeout(judgeNext,1900)}
+function verdict(){J.on=false;$('#tray').hidden=true;ent.sp.sign={mode:'obj',o:{s:0,c:2}};ent.li.sign={mode:'q'};ent.rv.sign={mode:'q'};flashA=1;shake=1.2;moonP=1.5;
+ [0,1,2,3,4,5].forEach(i=>setTimeout(()=>{flashA=.5;shoot(rnd(W),rnd(40));spark(rnd(W),rnd(90),20,['#ffd23f','#ff4fd0','#7ff0ea'][i%3],1.5,1.2);tone(220*(1+i*.25),.6,'triangle',.08)},i*220));
+ $('#vY').textContent=J.you;$('#vR').textContent=J.riv;$('#vT').textContent=J.you>J.riv?'The language is yours.':J.you==J.riv?'A stalemate on the black water.':'The rival read the runes better.';setTimeout(()=>$('#vd').classList.add('on'),1400)}
+function hud(){const c=cons(),m=a=>a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length*100):0;$('#ep').textContent=EP;$('#cm').style.width=Math.round(c*100)+'%';$('#al').textContent=m(hist.l)+'%';$('#ar').textContent=m(hist.r)+'%';
+ $('#lx').innerHTML=[...Array(8)].map((_,i)=>{const d=dom(i),ic=i<4?`<svg width="16" height="16" viewBox="0 0 18 18" fill="#e7e3ff">${P[i]}</svg>`:`<i class="dt" style="background:${CO[i-4]}"></i>`;
+  return `<div class="sl" title="${i<4?SN[i]:CN[i-4]}">${ic}${d.r>=0?runeSVG(d.r,i<4?'#e7e3ff':CO[i-4]):'<span class="no">?</span>'}<i class="bar"><b style="width:${Math.round(d.st*100)}%"></b></i></div>`}).join('')}
+/* update */
+function update(dt){t+=dt;mx+=(tmx-mx)*.06;my+=(tmy-my)*.06;shake=Math.max(0,shake-dt*2.5);moonP=Math.max(0,moonP-dt*.8);flashA=Math.max(0,flashA-dt*1.6);
+ for(const k in ent){const e=ent[k];e.fl=Math.max(0,e.fl-dt*2);if(e.hy>0||e.vy>0){e.hy+=e.vy*dt*60;e.vy-=.2*dt*60;if(e.hy<=0){e.hy=0;e.vy=0}}}
+ if(dart){dart.t+=dt;const u=Math.min(1,dart.t/dart.d);dart.x=lerp(dart.x0,dart.x1,u);dart.y=lerp(dart.y0,dart.y1,u)-34*4*u*(1-u)*(dart.fast?.7:1);spark(dart.x-5,dart.y,1,'#ffd23f',.3,.5);
+  if(dart.x>WL&&dart.x<WR&&Math.random()<.12)RP.push({x:dart.x,y:GY+8+rnd(34),r:1,l:.8});if(u>=1){const d=dart;dart=null;arrive(d)}}
+ if(auto&&!busy&&!dart&&!J.on){autoT-=dt;if(autoT<=0){whisper(true);autoT=.15}}
+ for(let i=P_.length-1;i>=0;i--){const p=P_[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.012;p.l-=dt;if(p.l<=0)P_.splice(i,1)}
+ for(let i=RP.length-1;i>=0;i--){const r=RP[i];r.r+=16*dt;r.l-=dt*.7;if(r.l<=0)RP.splice(i,1)}
+ for(let i=SS.length-1;i>=0;i--){const s=SS[i];s.x+=s.vx*dt;s.y+=s.vy*dt;s.l-=dt*.8;if(s.l<=0)SS.splice(i,1)}
+ if(Math.random()<dt*.12)shoot(W*.4+rnd(W*.6),rnd(40))}
+/* draw */
+function moon(c){for(let k=5;k>=1;k--)disc(MX,MY,MR+k*5+Math.round(moonP*4),'#d8404a',.025*(1+c+moonP));
+ disc(MX,MY,MR,'#c7343f');disc(MX-3,MY-3,MR-5,'#d8404a');disc(MX-4,MY-4,MR-9,'#e8545a',.7);disc(MX+5,MY+3,3,'#a02632');disc(MX-6,MY+6,2,'#a02632');disc(MX+2,MY-7,2,'#a02632')}
+function constellation(){const ds=SL.map((p,i)=>dom(i)),ln=(a,b)=>{const m=Math.min(ds[a].st,ds[b].st);if(m<.25)return;const n=Math.hypot(SL[b][0]-SL[a][0],SL[b][1]-SL[a][1]);for(let k=0;k<n;k+=4){const u=k/n;R(lerp(SL[a][0],SL[b][0],u)+2,lerp(SL[a][1],SL[b][1],u)+3,1,1,'#bfb6ff',m*.5)}};
+ [[0,1],[1,2],[2,3],[4,5],[5,6],[6,7]].forEach(([a,b])=>ln(a,b));
+ ds.forEach((d,i)=>{if(d.r<0)return;const a=(.15+.85*d.st)*(d.st<.5?.6+.4*Math.sin(t*9+i*3):1),p=SL[i];disc(p[0]+2,p[1]+3,7,'#8a6bff',a*.12);drawRune(d.r,p[0],p[1],i<4?'#e7e3ff':CO[i-4],a)})}
+function mtn(c,f1,f2,a1,a2,off){for(let x=-10;x<W+10;x++){const h=a1*tri(x/f1+off)+a2*tri(x/f2+off*1.7)+10;R(x,GY-h,1,h+2,c)}}
+function bank(x0,x1,seed){R(x0,GY,x1-x0,H-GY,'#4a4da0');R(x0,GY,x1-x0,2,'#8588dc');R(x0,GY+2,x1-x0,2,'#6a6dc4');R(x0,GY+18,x1-x0,H-GY-18,'#3b3d88');R(x0,GY+34,x1-x0,H-GY-34,'#2e3070');
+ const r=rng(seed);for(let i=0;i<46;i++){const x=x0+r()*(x1-x0),y=GY+5+r()*(H-GY-7);R(x,y,1+Math.floor(r()*3),1,'#262866',.7)}}
+function sym(s,c,cx,cy){const col=CO[c];if(s==0){for(let i=0;i<7;i++){const w=1+2*Math.floor(i/2);R(cx-Math.floor(w/2),cy-3+i,w,1,col)}}else if(s==1)disc(cx,cy,3,col);else if(s==2)R(cx-3,cy-3,7,7,col);else for(let i=-3;i<=3;i++){const a=3-Math.abs(i);R(cx-a,cy+i,1+2*a,1,col)}}
+function sign(e,y0){const s=e.sign;if(!s||s.mode=='none')return;const cx=Math.round(e.x+Math.sin(t*1.5+e.ph)),top=y0-24+Math.round(Math.sin(t*2+e.ph)),bc=s.res===true?'#4fe39a':s.res===false?'#ff6b6b':'#b9b4e8';
+ R(cx-5,top-8,1,8,bc,.6);R(cx+5,top-8,1,8,bc,.6);R(cx-6,top,13,13,bc);R(cx-5,top+1,11,11,'#efeaff');
+ if(s.mode=='q')QM.forEach((r,j)=>[...r].forEach((b,i)=>{if(b=='1')R(cx-2+i,top+3+j,1,1,'#8a85c8')}));else sym(s.o.s,s.o.c,cx,top+6)}
+function drawEnt(e,flip){const m=e.m,w=m[0].length,h=m.length,bob=Math.sin(t*3+e.ph)>.7?-1:0,x0=Math.round(e.x-w/2),y0=Math.round(GY-h-e.hy+bob);
+ R(e.x-5,GY,10,1,'#000',.3);m.forEach((row,j)=>{for(let i=0;i<w;i++){const ch=row[i];if(ch!='.')R(x0+(flip?w-1-i:i),y0+j,1,1,e.p[ch])}});
+ if(e.fl>0)m.forEach((row,j)=>{for(let i=0;i<w;i++){if(row[i]!='.')R(x0+(flip?w-1-i:i),y0+j,1,1,'#fff',e.fl*.7)}});sign(e,y0)}
+function draw(){ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;const sh=shake&&!RM;ctx.translate(sh?Math.round((Math.random()-.5)*shake*5):0,sh?Math.round((Math.random()-.5)*shake*4):0);
+ const c=cons(),px=RM?0:mx;SKY.forEach((col,i)=>R(-8,i*4,W+16,4,col));
+ ctx.save();ctx.translate(Math.round(px*.5),0);
+ const aa=(.035+.13*c)*(J.on?1.4:1);for(let i=0;i<3;i++){const col=['#3be0c8','#8a6bff','#ff4fd0'][i];for(let x=-8;x<W+8;x+=2){const y=22+i*9+8*Math.sin(x*.028+t*.4+i*2)+4*Math.sin(x*.07-t*.3);R(x,y,2,16,col,aa*(.5+.5*Math.sin(x*.05+t*.8+i)))}}
+ STARS.forEach(s=>{const a=.35+.65*(.5+.5*Math.sin(t*s.f+s.p));R(s.x,s.y,s.s,s.s,'#fff',a);if(s.s==2){R(s.x-1,s.y,4,1,'#fff',a*.4);R(s.x,s.y-1,1,4,'#fff',a*.4)}});
+ constellation();SS.forEach(s=>{for(let k=0;k<8;k++)R(s.x-s.vx*k*.012,s.y-s.vy*k*.012,1,1,'#fff',s.l*(1-k/8))});moon(c);ctx.restore();
+ ctx.save();ctx.translate(Math.round(px*1.2),0);mtn('#25255a',26,9,34,10,0);ctx.restore();
+ ctx.save();ctx.translate(Math.round(px*2.2),0);mtn('#34377e',17,7,26,8,3);ctx.restore();
+ for(let i=0;i<3;i++)R(((t*(4+i*2)+i*120)%(W+80))-80,GY-6-i*4,80,3+i,'#8a7fd0',.1);
+ ctx.save();ctx.translate(Math.round(px*3.6),0);
+ R(WL,GY,WR-WL,H-GY,'#06132a');R(WL,GY+30,WR-WL,H-GY-30,'#040e20');
+ const nz=(1-c)*8;for(let r=0;r<10;r++){const y=GY+5+r*5.5,len=8+r;for(let k=0;k<3;k++){const wd=WR-WL,x=(((r*37+k*70+t*(r%2?9:-7)+Math.sin(t*2+r+k)*nz)%wd)+wd)%wd;R(WL+x,y,Math.min(len,wd-x),1,'#2fd0cc',r%3==0?.75:.38)}}
+ for(let k=0;k<10;k++){const w=16-k;R(MX-w/2+Math.sin(t*3+k)*(1+k*.3),GY+4+k*5.5,w,1,'#e0505a',.55-.04*k)}
+ if(dart&&dart.x>WL&&dart.x<WR)R(dart.x-4,2*GY-dart.y+2,8,1,'#ffd23f',.35);
+ RP.forEach(r=>{for(let k=0;k<20;k++){const an=k/20*6.283;R(r.x+Math.cos(an)*r.r,r.y+Math.sin(an)*r.r*.3,1,1,'#bff8ff',r.l*.7)}});
+ bank(-40,WL,3);bank(WR,W+40,8);R(WL-3,GY,3,H-GY,'#262866');R(WR,GY,3,H-GY,'#262866');
+ drawEnt(ent.sp,false);drawEnt(ent.li,true);drawEnt(ent.rv,true);
+ if(dart){const x=Math.round(dart.x),y=Math.round(dart.y);disc(x,y,7,'#ffd23f',.12);R(x-6,y,9,1,'#ffd23f');R(x+3,y-1,2,3,'#fff1a8');R(x+5,y,1,1,'#fff1a8');R(x-7,y-2,2,2,'#ffb02e');R(x-7,y+1,2,2,'#ffb02e');
+  dart.runes.forEach((r,i)=>drawRune(r,x-6+i*7,y-14+Math.round(Math.sin(t*8+i)),'#fff1a8',1))}
+ P_.forEach(p=>R(p.x,p.y,p.s,p.s,p.c,Math.max(0,p.l/p.m)));
+ const nf=6+Math.floor(c*18);FF.forEach((f,i)=>{if(i>=nf)return;const a=.4+.6*Math.sin(t*2+f.p),x=f.x+Math.sin(t*.5+f.p)*6,y=f.y+Math.cos(t*.7+f.p)*4;R(x,y,1,1,'#d8ff7a',a);R(x-1,y,3,1,'#d8ff7a',a*.25)});
+ ctx.restore();
+ ctx.save();ctx.translate(Math.round(px*7),0);REED.forEach(r=>{const x=r.x,h=r.h+Math.sin(t*1.5+x)*.8;R(x,H-h,1,h,'#0f0c2a');R(x+r.s,H-h-1,1,2,'#0f0c2a')});ctx.restore();
+ R(-8,-8,W+16,H+16,'#fff',flashA);ctx.globalAlpha=1}
+/* input */
+const cvPos=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H]};
+const hit=(x,y)=>{const gx=x-Math.round(mx*3.6),nr=e=>Math.abs(gx-e.x)<9&&y>GY-24&&y<GY+2;
+ if(Math.hypot(x-MX-Math.round(mx*.5),y-MY)<MR+5)return'moon';if(nr(ent.sp))return'sp';if(nr(ent.li))return'li';if(nr(ent.rv))return'rv';if(gx>WL&&gx<WR&&y>GY)return'water';if(y<GY-30)return'sky';return''};
+cv.addEventListener('pointermove',e=>{const[x,y]=cvPos(e),r=cv.getBoundingClientRect();tmx=((e.clientX-r.left)/r.width-.5)*2;tmy=((e.clientY-r.top)/r.height-.5)*2;cv.style.cursor=hit(x,y)?'pointer':'default'});
+cv.addEventListener('pointerleave',()=>{tmx=0;tmy=0});
+cv.addEventListener('pointerdown',e=>{aud();const[x,y]=cvPos(e),h=hit(x,y),gx=x-Math.round(mx*3.6);
+ if(h=='moon'){moonP=1;flashA=.25;shake=.4;tone(110,1.2,'sine',.15,.5);spark(MX,MY,24,'#ff6b6b',1.2,1)}
+ else if(h=='sp')whisper(false);
+ else if(h=='li'){ent.li.vy=2.2;ent.li.fl=.8;spark(ent.li.x,GY-14,12,'#7ff0ea',.8,.7);tone(740,.3)}
+ else if(h=='rv'){ent.rv.vy=2.6;ent.rv.fl=.5;tone(220,.3,'square',.05)}
+ else if(h=='water'){RP.push({x:gx,y,r:1,l:1});tone(520+rnd(200),.25,'sine',.06,1.5)}
+ else if(h=='sky'){shoot(x,y);tone(1200,.4,'sine',.04,.5)}});
+function act(a){if(a=='w')whisper(false);else if(a=='e'){auto=!auto;$('#bE').firstChild.textContent='Evolve: '+(auto?'on':'off');$('#bE').classList.toggle('on',auto)}else if(a=='s')skip();else if(a=='j')judge();
+ else if(a=='m'){snd=!snd;$('#bM').firstChild.textContent='Sound: '+(snd?'on':'off');$('#bM').classList.toggle('on',snd);if(snd)aud()}}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.a)act(b.dataset.a);else if(b.dataset.o!=null)answer(+b.dataset.o);
+ else if(b.id=='again'){$('#vd').classList.remove('on');newLang();ent.sp.sign={mode:'obj',o:{s:0,c:2}};ent.li.sign={mode:'q'};ent.rv.sign={mode:'q'};cap('A new language begins to form. Press Whisper.');hud()}
+ else if(b.id=='keep')$('#vd').classList.remove('on')});
+addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey)return;const k=e.key.toLowerCase();if(k==' '){e.preventDefault();act('w')}else if({e:1,s:1,j:1,m:1}[k])act(k)});
+newLang();hud();
+let last=performance.now();(function f(n){const dt=Math.min(.05,(n-last)/1000);last=n;update(dt);draw();requestAnimationFrame(f)})(last);
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     BACKEND ADAPTER — connects to FastAPI WebSocket for real model
+     training. Falls back to local simulation if backend is offline.
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+
+var wsReady=false, _ws=null, _wsWaiting=false, _evolveActive=false;
+var _pendingRound=null, _wsRound=null, _wsJudge=null, _serverStats=null, _lastAnswerIdx=-1;
+
+var _dot = document.getElementById('ws-dot');
+function _setDot(ok){
+  _dot.style.background = ok ? '#4fe39a' : '#ff4444';
+  _dot.style.boxShadow  = '0 0 6px ' + (ok ? '#4fe39a' : '#ff4444');
+  _dot.title = ok ? 'Backend connected – real model' : 'Backend disconnected – simulation';
+}
+
+function _applyRound(msg){
+  _wsRound = msg;
+  EP = msg.epoch;
+  _wsWaiting = false;
+  busy = true;
+  var o = msg.object;
+  ent.sp.sign = {mode:'obj', o:o};
+  ent.li.sign = {mode:'q'};
+  ent.rv.sign = {mode:'q'};
+  launch({o:o, runes:msg.message}, _evolveActive, ent.li.x - 9);
+}
+
+function _connect(){
+  try { _ws = new WebSocket('ws://' + (location.hostname || 'localhost') + ':8000/ws'); } catch(e){ return; }
+  _ws.onopen = function(){ wsReady=true; _setDot(true); };
+  _ws.onclose = function(){
+    wsReady=false; _wsWaiting=false; _evolveActive=false;
+    _setDot(false);
+    setTimeout(_connect, 3000);
+  };
+  _ws.onerror = function(){ _ws.close(); };
+  _ws.onmessage = function(ev){
+    var msg = JSON.parse(ev.data);
+
+    if(msg.type === 'round'){
+      if(!J.on){
+        if(!busy && !dart) _applyRound(msg);
+        else _pendingRound = msg;
+      }
+
+    } else if(msg.type === 'stats'){
+      _serverStats = msg;
+      EP = msg.epoch;
+      hist.l.length = 0; hist.r.length = 0;
+      for(var i=0; i<20; i++){
+        hist.l.push(Math.random() < msg.listener_acc ? 1 : 0);
+        hist.r.push(Math.random() < msg.rival_acc ? 1 : 0);
+      }
+      hud();
+
+    } else if(msg.type === 'judge_round'){
+      _wsJudge = msg;
+      J.i = msg.index;
+      J.o = {s:0,c:0};
+      $('#tray').hidden = true;
+      ent.sp.sign = {mode:'q'};
+      ent.li.sign = {mode:'none'};
+      ent.rv.sign = {mode:'q'};
+      cap('Judgment ' + msg.index + ' of 8: the dart carries two runes. Read them against the Lexicon.');
+      hud();
+      launch({o:{s:0,c:0}, runes:msg.message}, false, (ent.li.x + ent.rv.x) / 2);
+
+    } else if(msg.type === 'judge_result'){
+      var correct = msg.correct, truth = msg.truth;
+      var rival_guess = msg.rival_guess, rival_correct = msg.rival_correct;
+      J.you = msg.you; J.riv = msg.rival;
+      document.querySelectorAll('.op').forEach(function(b, j){
+        var opt = J.opts && J.opts[j];
+        b.classList.toggle('ok',  !!(opt && opt.s === truth.s && opt.c === truth.c));
+        b.classList.toggle('bad', j === _lastAnswerIdx && !correct);
+        b.disabled = true;
+      });
+      ent.sp.sign = {mode:'obj', o:truth};
+      ent.rv.sign = {mode:'guess', o:rival_guess, res:rival_correct};
+      ent.sp.fl = .8;
+      if(correct){ tone(880,.4); spark(ent.sp.x, GY-16, 18, '#4fe39a', 1.2, .9); }
+      else tone(170, .5, 'sawtooth', .06);
+      cap((correct?'You read it true.':'Not that one.') + ' Rival: ' + (rival_correct?'correct':'wrong') + '. You ' + J.you + ' \u2013 ' + J.riv + ' Rival.');
+      if(msg.finished) setTimeout(verdict, 1900);
+    }
+  };
+}
+
+/* ── Override: arrive ─────────────────────────────────────────── */
+var _arriveOrig = arrive;
+arrive = function(d){
+  if(!wsReady || (!_wsRound && !J.on)){ _arriveOrig(d); return; }
+  spark(d.x1,d.y1,24,'#ffd23f',1.4,.9);
+  spark(d.x1,d.y1,12,'#7ff0ea',1,.8);
+  RP.push({x:d.x1, y:GY+14, r:1, l:1});
+  shake=.6; moonP=1; tone(660,.5);
+  setTimeout(function(){tone(990,.7)},90);
+
+  if(J.on){
+    J.wait=true; ent.rv.vy=2; ent.rv.fl=1; ent.li.vy=1.5;
+    showTray(); return;
+  }
+
+  var o=d.o, fast=_evolveActive;
+  var gL=_wsRound.listener_guess, gR=_wsRound.rival_guess;
+  ent.li.vy=2.2; ent.li.fl=1; ent.rv.vy=1.2;
+  ent.li.sign={mode:'guess',o:gL,res:null};
+  ent.rv.sign={mode:'guess',o:gR,res:null};
+  setTimeout(function(){
+    var lOk = gL.s===o.s && gL.c===o.c;
+    var rOk = gR.s===o.s && gR.c===o.c;
+    ent.li.sign.res=lOk; ent.rv.sign.res=rOk; ent.sp.fl=.7;
+    if(lOk){tone(880,.35);spark(ent.li.x,GY-16,16,'#4fe39a',1,.8);}
+    else tone(170,.4,'sawtooth',.05);
+    cap(lOk?'The Listener understood the whisper.':'The Listener missed the meaning.');
+    hud();
+    setTimeout(function(){
+      busy=false;
+      if(_evolveActive && _pendingRound && !J.on){
+        var p=_pendingRound; _pendingRound=null; _applyRound(p);
+      }
+    }, fast?120:500);
+  }, fast?220:800);
+};
+
+/* ── Override: showTray ───────────────────────────────────────── */
+var _showTrayOrig = showTray;
+showTray = function(){
+  if(!wsReady || !_wsJudge){ _showTrayOrig(); return; }
+  J.opts = _wsJudge.options;
+  $('#tray').hidden = false;
+  $('#tr').innerHTML = J.opts.map(function(x,i){
+    return '<button class="op" data-o="'+i+'" aria-label="'+CN[x.c]+' '+SN[x.s]+'"><svg width="36" height="36" viewBox="0 0 18 18" fill="'+CO[x.c]+'">'+P[x.s]+'</svg></button>';
+  }).join('');
+};
+
+/* ── Override: whisper ────────────────────────────────────────── */
+var _whisperOrig = whisper;
+whisper = function(fast){
+  if(!wsReady){ _whisperOrig(fast); return; }
+  if(busy || dart || J.on || _wsWaiting) return;
+  aud(); _wsWaiting = true;
+  cap('The Speaker whispers a sealed dart across the black water\u2026');
+  _ws.send(JSON.stringify({cmd:'whisper'}));
+};
+
+/* ── Override: skip ───────────────────────────────────────────── */
+var _skipOrig = skip;
+skip = function(){
+  if(!wsReady){ _skipOrig(); return; }
+  if(busy || dart || J.on) return;
+  aud();
+  for(var i=0;i<5;i++) RP.push({x:WL+10+rnd(WR-WL-20), y:GY+8+rnd(40), r:1, l:1});
+  flashA=.5; shake=.8; moonP=1; tone(120,1.4,'sine',.15,3);
+  cap('Twenty-five epochs pass in a breath. The runes settle.');
+  _ws.send(JSON.stringify({cmd:'skip', n:25}));
+};
+
+/* ── Override: judge ──────────────────────────────────────────── */
+var _judgeOrig = judge;
+judge = function(){
+  if(!wsReady){ _judgeOrig(); return; }
+  if(J.on || busy || dart) return;
+  aud();
+  if(_evolveActive){
+    _evolveActive=false; auto=false;
+    $('#bE').firstChild.textContent='Evolve: off';
+    $('#bE').classList.remove('on');
+    _ws.send(JSON.stringify({cmd:'evolve',on:false}));
+  }
+  J={on:true, i:0, you:0, riv:0, wait:false};
+  $('#tray').hidden = true;
+  cap(EP<12 ? 'The language is still noise. Evolve it first for a fair judgment\u2026' :
+              'Judgment begins. The Speaker will send eight sealed darts. Read the runes.');
+  setTimeout(function(){ _ws.send(JSON.stringify({cmd:'judge_start'})); }, EP<12?1600:300);
+};
+
+/* ── Override: judgeNext — server drives ──────────────────────── */
+var _judgeNextOrig = judgeNext;
+judgeNext = function(){
+  if(!wsReady){ _judgeNextOrig(); return; }
+  /* server sends next judge_round automatically after judge_answer */
+};
+
+/* ── Override: answer ─────────────────────────────────────────── */
+var _answerOrig = answer;
+answer = function(i){
+  if(!wsReady){ _answerOrig(i); return; }
+  if(!J.wait) return;
+  J.wait = false; _lastAnswerIdx = i;
+  document.querySelectorAll('.op').forEach(function(b){ b.disabled = true; });
+  _ws.send(JSON.stringify({cmd:'judge_answer', index:i}));
+};
+
+/* ── Override: newLang ────────────────────────────────────────── */
+var _newLangOrig = newLang;
+newLang = function(){
+  _newLangOrig();
+  _serverStats=null; _wsRound=null; _pendingRound=null; _wsJudge=null;
+  _wsWaiting=false; _evolveActive=false;
+  if(wsReady) _ws.send(JSON.stringify({cmd:'reset', seed:Math.floor(Math.random()*65536)}));
+};
+
+/* ── Override: hud — patch with server stats ──────────────────── */
+var _hudOrig = hud;
+hud = function(){
+  _hudOrig();
+  if(_serverStats){
+    $('#ep').textContent = _serverStats.epoch;
+    $('#cm').style.width = Math.round(_serverStats.consistency * 100) + '%';
+    $('#al').textContent = Math.round(_serverStats.listener_acc * 100) + '%';
+    $('#ar').textContent = Math.round(_serverStats.rival_acc * 100) + '%';
+  }
+};
+
+/* ── Override: dom — use server lexicon ───────────────────────── */
+var _domOrig = dom;
+dom = function(i){
+  if(_serverStats && _serverStats.lexicon){
+    var e = _serverStats.lexicon.find(function(x){ return x.meaning === i; });
+    if(e) return {r: e.symbol, st: e.stability};
+  }
+  return _domOrig(i);
+};
+
+/* ── Override: act — sync evolve with server ──────────────────── */
+var _actOrig = act;
+act = function(a){
+  _actOrig(a);
+  if(a === 'e' && wsReady){
+    _evolveActive = auto;
+    _pendingRound = null;
+    _ws.send(JSON.stringify({cmd:'evolve', on:auto}));
+  }
+};
+
+/* ── Override: update — suppress local auto-whisper when server-driven ── */
+var _updateOrig = update;
+update = function(dt){
+  if(_evolveActive && wsReady){
+    var _a = auto; auto = false;
+    _updateOrig(dt);
+    auto = _a;
+    if(_pendingRound && !busy && !dart && !J.on){
+      var p = _pendingRound; _pendingRound = null; _applyRound(p);
+    }
+  } else {
+    _updateOrig(dt);
+  }
+};
+
+/* ── Boot ─────────────────────────────────────────────────────── */
+try { _connect(); } catch(e) { /* backend offline — simulation runs */ }
+
+})();
+</script>
+</body></html>

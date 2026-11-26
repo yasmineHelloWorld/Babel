@@ -1,0 +1,11 @@
+{"epoch": 1, "listener_acc": 0.03125, "rival_acc": 0.015625, "entropy": 2.7520976066589355, "topsim": 0.2226200299199654, "consistency": 0.09127822052687407}
+{"epoch": 2, "listener_acc": 0.046875, "rival_acc": 0.03125, "entropy": 2.750181198120117, "topsim": 0.2250902767206154, "consistency": 0.0744399861432612}
+{"epoch": 3, "listener_acc": 0.046875, "rival_acc": 0.06770833333333333, "entropy": 2.748967409133911, "topsim": 0.14216747196067267, "consistency": 0.0714702308177948}
+{"epoch": 4, "listener_acc": 0.0703125, "rival_acc": 0.0859375, "entropy": 2.7474570274353027, "topsim": 0.11135885079684366, "consistency": 0.07245010696351528}
+{"epoch": 5, "listener_acc": 0.059375, "rival_acc": 0.09375, "entropy": 2.7447354793548584, "topsim": 0.14082483260787196, "consistency": 0.06645566690713167}
+{"epoch": 6, "listener_acc": 0.06770833333333333, "rival_acc": 0.09375, "entropy": 2.742164373397827, "topsim": 0.15227192612076007, "consistency": 0.07161289127543569}
+{"epoch": 7, "listener_acc": 0.06473214285714286, "rival_acc": 0.09151785714285714, "entropy": 2.742129325866699, "topsim": 0.1348026362126877, "consistency": 0.07116510486230254}
+{"epoch": 8, "listener_acc": 0.06640625, "rival_acc": 0.08984375, "entropy": 2.737140655517578, "topsim": 0.10996688416376985, "consistency": 0.06379293976351619}
+{"epoch": 9, "listener_acc": 0.06076388888888889, "rival_acc": 0.08506944444444445, "entropy": 2.733098030090332, "topsim": 0.14379710322657435, "consistency": 0.06500561023131013}
+{"epoch": 10, "listener_acc": 0.0625, "rival_acc": 0.0796875, "entropy": 2.7331337928771973, "topsim": 0.13480263621268768, "consistency": 0.078685587272048}
+{"epoch": 11, "listener_acc": 0.05823863636363636, "rival_acc": 0.07528409090909091, "entropy": 2.728285789489746, "topsim": 0.13480263621268768, "consistency": 0.07486504223197699}

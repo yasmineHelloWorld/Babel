@@ -28,3 +28,8 @@ babel = "babel.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.pytest.ini_options]
+markers = [
+    "slow: marks tests that run full training (2000+ epochs)",
+]
+
